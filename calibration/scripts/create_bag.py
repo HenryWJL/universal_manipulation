@@ -147,7 +147,6 @@ try:
         topic = os.path.splitext(os.path.basename(imufile))[0]
         with open(imufile, 'r') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
-            headers = next(reader, None)
             for row in reader:
                 imumsg, timestamp = createImuMessge(row[0], row[1:4], row[4:7], topic)
                 bag.write("/{0}".format(topic), imumsg, timestamp)
