@@ -113,8 +113,8 @@ def loadImageToRosMsg(filename, cam_name):
     return rosimage, timestamp
 
 def createImuMessge(timestamp_int, omega, alpha, imu_name):
-    timestamp_nsecs = str(timestamp_int)
-    timestamp = rospy.Time( int(timestamp_nsecs[0:-9]), int(timestamp_nsecs[-9:]) )
+    timestamp_nsecs = timestamp_int.split(".")[0]
+    timestamp = rospy.Time(int(timestamp_nsecs[0:-9]), int(timestamp_nsecs[-9:]))
     
     rosimu = Imu()
     rosimu.header.stamp = timestamp

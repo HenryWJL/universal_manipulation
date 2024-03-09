@@ -13,12 +13,12 @@ def make_parser():
     )
     parser.add_argument(
         "--root",
-        default="C:/Users/86136/python_project/videos",
+        default="",
         help="Root directory where videos and IMU data are stored."
     )
     parser.add_argument(
         "--save_dir",
-        default="dataset_dir",
+        default="",
         help="Directory used for saving prepared data."
     )
     return parser
@@ -90,7 +90,7 @@ class Dataset:
             idx_accel += 1
 
         imu_data = np.delete(imu_data, range(idx_imu, num_gyro), axis=0)
-        np.savetxt(str(self.save_dir.joinpath("imu0.csv")), imu_data, delimiter=",")
+        np.savetxt(str(self.save_dir.joinpath("imu0.csv")), imu_data, delimiter=",", fmt="%f")
             
     
 def main(argv=sys.argv[1:]):

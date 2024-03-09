@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<package>
+<package format="2">
   <name>calibration</name>
-  <version>0.0.1</version>
+  <version>0.0.0</version>
   <description>Package used for calibration</description>
   <maintainer email="12112921@mail.sustech.edu.cn">Junlin Wang</maintainer>
   <author>Junlin Wang</author>

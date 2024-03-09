@@ -23,7 +23,9 @@ include_directories(
 
 catkin_install_python(
   PROGRAMS
+    scripts/data_preprocess.py
     scripts/create_bag.py
   DESTINATION
     ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
