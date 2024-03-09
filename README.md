@@ -4,6 +4,7 @@ Another version of universal manipulation interface (UMI)
 ## Usage
 ```
 cd ~/<workspace>/src
+git clone https://github.com/ori-drs/kalibr.git --branch noetic-devel
 git clone https://github.com/HenryWJL/universal_manipulation.git
 cd ..
 catkin_make
