@@ -1,23 +1,28 @@
-import sys
 import os
-from pathlib import Path
-import numpy as np
+import sys
 import click
 import shutil
+from pathlib import Path
 from exiftool import ExifToolHelper
-from utils import mp4_get_start_datetime
+
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(ROOT_DIR)
+os.chdir(ROOT_DIR)
+
+from utils.timecode_util import mp4_get_start_datetime
+from utils.imu_util import imu_convert_format
 
 
-@click.command(help="Transform raw IMU data to specified formats and move videos as well as processed IMU data to target directories.")
+@click.command(help="Transform raw IMU data to UMI supported formats and move videos as well as processed IMU data to target directories.")
 @click.option("-l", "--load_dir", type=str, required=True, help="Directory where videos and raw IMU data are stored.")
-@click.option("-s", "--save_dir", type=str, default="", help="Directory used for saving videos and processed IMU data.")
+# @click.option("-s", "--save_dir", type=str, default="", help="Directory used for saving videos and processed IMU data.")
 
 
 def main(load_dir):
     load_dir = Path(os.path.expanduser(load_dir)).absolute()
     input_dir = load_dir.joinpath('raw_videos')
     output_dir = load_dir.joinpath('demos')
-
+    
     if not input_dir.is_dir():
         input_dir.mkdir()
 
@@ -54,7 +59,7 @@ def main(load_dir):
         serial_path_dict = dict()
         with ExifToolHelper() as et:
             for mp4_path in list(input_dir.glob('VID*.mp4')):
-                start_date = mp4_get_start_datetime(str(mp4_path))
+                start_date = mp4_get_start_datetime(mp4_path)
                 meta = list(et.get_metadata(str(mp4_path)))[0]
                 cam_serial = meta['QuickTime:CameraSerialNumber']
                 # find mp4 video with earliest starting datatime and apply it for gripper calibration
@@ -90,7 +95,7 @@ def main(load_dir):
             3. 'gripper_calibration_<cam_serial>_year.month.day_hour.minute.second.xxxx'
 
             """
-            start_date = mp4_get_start_datetime(str(mp4_path))
+            start_date = mp4_get_start_datetime(mp4_path)
             meta = list(et.get_metadata(str(mp4_path)))[0]
             cam_serial = meta['QuickTime:CameraSerialNumber']
             out_dname = 'demo_' + cam_serial + '_' + start_date.strftime(r"%Y.%m.%d_%H.%M.%S.%f")
@@ -107,12 +112,15 @@ def main(load_dir):
             this_out_dir.mkdir(parents=True, exist_ok=True)
             
             ### move mp4 videos to target directories
-            vfname = 'raw_video.mp4'
-            out_video_path = this_out_dir.joinpath(vfname)  # <load_dir>/demos/<out_dname>/raw_video.mp4
+            out_video_path = this_out_dir.joinpath(mp4_path.name)  # <load_dir>/demos/<out_dname>/VID_*.mp4
             shutil.move(mp4_path, out_video_path)
 
             ### process and move IMU data to target directories
-            imu_dir = mp4_path.name[4: -4]
+            imu_load_dir = load_dir.joinpath(mp4_path.name[4: -4])
+            """
+            Remark: we assume that videos and imu data are recorded simultaneously
+            """
+            imu_convert_format(imu_load_dir, this_out_dir, start_date)
 
             ### create symbolic link for all videos. Links are in "raw_videos"
             dots = os.path.join(*['..'] * len(mp4_path.parent.relative_to(load_dir).parts))
@@ -121,13 +129,9 @@ def main(load_dir):
             mp4_path.symlink_to(symlink_path)
 
 
-
-
-    
 if __name__ == '__main__':
-    # if len(sys.argv) == 1:
-    #     main.main(['--help'])
+    if len(sys.argv) == 1:
+        main.main(['--help'])
 
-    # else:
-    #     main()
-    print(mp4_get_start_datetime("VID_20240307_184717.mp4").timestamp())
+    else:
+        main()
