@@ -5,7 +5,7 @@ import numpy as np
 import click
 import shutil
 from exiftool import ExifToolHelper
-from umi.common.timecode_util import mp4_get_start_datetime
+from utils import mp4_get_start_datetime
 
 
 @click.command(help="Transform raw IMU data to specified formats and move videos as well as processed IMU data to target directories.")
@@ -113,13 +113,6 @@ def main(load_dir):
 
             ### process and move IMU data to target directories
             imu_dir = mp4_path.name[4: -4]
-            accel_path = list(load_dir.glob(f"{imu_dir}/*accel.csv"))[0]
-            gyro_path = list(load_dir.glob(f"{imu_dir}/*gyro.csv"))[0]
-
-            gyro_data = np.loadtxt(open(str(gyro_path), 'rb'), delimiter=",")
-            accel_data = np.loadtxt(open(str(accel_path), 'rb'), delimiter=",")
-            np.set_printoptions(suppress=True)  # TODO
-            imu_data = synchronize(gyro_data, accel_data)
 
             ### create symbolic link for all videos. Links are in "raw_videos"
             dots = os.path.join(*['..'] * len(mp4_path.parent.relative_to(load_dir).parts))
@@ -128,41 +121,7 @@ def main(load_dir):
             mp4_path.symlink_to(symlink_path)
 
 
-def synchronize(gyro_data, accel_data):
-    """
-    Synchronize gyro and accel data 
 
-    Returns:
-        gyro + accel + timestamp
-    """
-    idx_accel = 0
-    idx_gyro = 0
-    idx_imu = 0
-    num_gyro = gyro_data.shape[0]
-    num_accel = accel_data.shape[0]
-    imu_data = np.zeros((num_gyro, 7), dtype=np.float32)
-    while (accel_data[0, -1] > gyro_data[idx_gyro, -1]):
-        idx_gyro += 1
-
-    while (idx_accel + 1 < num_accel and idx_gyro < num_gyro):
-        # compute timestamp and acceleration difference
-        delta_time_accel = accel_data[(idx_accel + 1), -1] - accel_data[idx_accel, -1]
-        delta_accel = accel_data[(idx_accel + 1), 0: 3] - accel_data[idx_accel, 0: 3]
-        # combine imu data
-        while (idx_gyro < num_gyro and accel_data[idx_accel + 1, -1] >= gyro_data[idx_gyro, -1]):
-            imu_data[idx_imu, -1] = gyro_data[idx_gyro, -1]
-            # interpolate acceleration
-            imu_data[idx_imu, 3: 6] = accel_data[idx_accel, 0: 3] + \
-                (gyro_data[idx_gyro, -1] - accel_data[idx_accel, -1]) * delta_accel / delta_time_accel
-            # dump gyro data
-            imu_data[idx_imu, 0: 3] = gyro_data[idx_gyro, 0: 3]
-
-            idx_gyro += 1
-            idx_imu += 1
-
-        idx_accel += 1
-
-    imu_data = np.delete(imu_data, range(idx_imu, num_gyro), axis=0)
 
     
 if __name__ == '__main__':
