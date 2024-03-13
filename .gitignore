@@ -2,3 +2,5 @@
 *.csv
 *.png
 *.bag
+*.pyc
+*.json
