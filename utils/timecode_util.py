@@ -21,7 +21,9 @@ def mp4_get_start_datetime(mp4_path: Path) -> datetime:
     hour = str2int(start_date[9: 11])
     min = str2int(start_date[11: 13])
     sec = str2int(start_date[13: ])
-    # TODO take microseconds into consideration
+    """
+    Remarks: Microseconds are not taken into account
+    """
     mp4_start_datetime = datetime(year, month, day, hour, min, sec)
     
     return mp4_start_datetime

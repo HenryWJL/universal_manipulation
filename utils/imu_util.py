@@ -9,9 +9,7 @@ def imu_synchronize(
     gyro_data: np.ndarray,
     accel_data: np.ndarray
     ):
-    """
-    align gyro data with accel data
-    """
+    """Align gyro data with accel data"""
     num_gyro = gyro_data.shape[0]
     num_accel = accel_data.shape[0]
     imu_data = np.zeros((num_gyro, 7), dtype=np.float32)
@@ -93,7 +91,7 @@ def imu_convert_format(
     ### get delta time (seconds) between neighbor timestamps
     timestamp = imu_data[ :, 0]
     """
-    Remark: the unit of timestamp difference is not nanoseconds
+    Remarks: The unit of timestamp difference is not nanoseconds
     """
     timestamp[1: ] = (timestamp[1: ] - timestamp[: -1]) / 10e8
     timestamp[0] = 0.0
@@ -132,7 +130,9 @@ def imu_convert_format(
         ### dump imu data
         gyro = imu_data[i, 0: 3].tolist()
         accel = imu_data[i, 3: 6].tolist()
-        # TODO find the meanings of "cts" and "temperature"
+        """
+        Remarks: "cts" and "temperature" are not considered
+        """
         gyro_data = {
             "value": gyro,
             "cts": 0.0,
