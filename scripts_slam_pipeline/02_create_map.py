@@ -39,12 +39,13 @@ from utils.cv_util import draw_predefined_mask
 
 @click.command()
 @click.option('-i', '--input_dir', required=True, help='Directory for loading mapping video')
+@click.option('-r', '--resolution', type=tuple, default=(480, 640), help='image resolution')
 @click.option('-m', '--map_path', default=None, help='ORB_SLAM3 *.osa map atlas file')
 @click.option('-d', '--docker_image', default="chicheng/orb_slam3:latest")
 @click.option('-np', '--no_docker_pull', is_flag=True, default=False, help="pull docker image from docker hub")
 @click.option('-nm', '--no_mask', is_flag=True, default=False, help="Whether to mask out gripper and mirrors.")
 
-def main(input_dir, map_path, docker_image, no_docker_pull, no_mask):
+def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask):
     video_dir = pathlib.Path(os.path.expanduser(input_dir)).absolute() # <session>/demos/mapping
     video_path = list(video_dir.glob("VID*.mp4"))[0]
     for file in [video_path, video_dir.joinpath("imu_data.json")]:
@@ -76,7 +77,7 @@ def main(input_dir, map_path, docker_image, no_docker_pull, no_mask):
         """
         Remarks: The generated masks may fail to mask grippers and mirrors
         """
-        slam_mask = np.zeros((480, 640), dtype=np.uint8)
+        slam_mask = np.zeros(resolution, dtype=np.uint8)
         slam_mask = draw_predefined_mask(
             slam_mask, color=255, mirror=True, gripper=False, finger=True)
         cv2.imwrite(str(mask_write_path.absolute()), slam_mask)
