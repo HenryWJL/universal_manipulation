@@ -95,6 +95,9 @@ def imu_convert_format(
     """
     timestamp[1: ] = (timestamp[1: ] - timestamp[: -1]) / 10e8
     timestamp[0] = 0.0
+    ### get fps
+    delta_mean = timestamp.sum() / (timestamp.shape - 1)
+    fps = 1 / delta_mean
     ### get timestamp increments w.r.t the starting time
     timestamp_inc = np.array([
         timestamp[: (i+1)].sum()
@@ -117,7 +120,7 @@ def imu_convert_format(
             },
             "device name": "Mobile Phone"
         },
-        "frames/second": 100 # TODO
+        "frames/second": fps
     }
     for i in range(imu_data.shape[0]):
         ### get imu's datetime
