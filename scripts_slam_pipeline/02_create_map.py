@@ -22,35 +22,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-"""
-Mapping is unnecessary in the pipeline
-"""
-import sys
+"""Mapping"""
 import os
-
-ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-sys.path.append(ROOT_DIR)
-os.chdir(ROOT_DIR)
-
+import sys
 import pathlib
 import click
 import subprocess
 import numpy as np
 import cv2
-from umi.common.cv_util import draw_predefined_mask
+
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(ROOT_DIR)
+os.chdir(ROOT_DIR)
+
+from utils.cv_util import draw_predefined_mask
 
 @click.command()
-@click.option('-i', '--input_dir', required=True, help='Directory for mapping video')
+@click.option('-i', '--input_dir', required=True, help='Directory for loading mapping video')
 @click.option('-m', '--map_path', default=None, help='ORB_SLAM3 *.osa map atlas file')
 @click.option('-d', '--docker_image', default="chicheng/orb_slam3:latest")
 @click.option('-np', '--no_docker_pull', is_flag=True, default=False, help="pull docker image from docker hub")
-@click.option('-nm', '--no_mask', is_flag=True, default=False, help="Whether to mask out gripper and mirrors. Set if map is created with bare GoPro no on gripper.")
-
+@click.option('-nm', '--no_mask', is_flag=True, default=False, help="Whether to mask out gripper and mirrors.")
 
 def main(input_dir, map_path, docker_image, no_docker_pull, no_mask):
     video_dir = pathlib.Path(os.path.expanduser(input_dir)).absolute() # <session>/demos/mapping
-    for fn in ['raw_video.mp4', 'imu_data.json']:
-        assert video_dir.joinpath(fn).is_file()
+    video_path = list(video_dir.glob("VID*.mp4"))[0]
+    for file in [video_path, video_dir.joinpath("imu_data.json")]:
+        assert file.is_file(), "No such files!"
 
     if map_path is None:
         map_path = video_dir.joinpath('map_atlas.osa')
@@ -75,14 +73,18 @@ def main(input_dir, map_path, docker_image, no_docker_pull, no_mask):
     ### prepare slam mask
     if not no_mask:
         mask_write_path = video_dir.joinpath('slam_mask.png')
-        slam_mask = np.zeros((2028, 2704), dtype=np.uint8)
+        """
+        Remarks: The generated masks may fail to mask grippers and mirrors
+        """
+        slam_mask = np.zeros((480, 640), dtype=np.uint8)
         slam_mask = draw_predefined_mask(
             slam_mask, color=255, mirror=True, gripper=False, finger=True)
         cv2.imwrite(str(mask_write_path.absolute()), slam_mask)
+
     ### prepare docker volume
     mount_target = pathlib.Path('/data')
     csv_path = mount_target.joinpath('mapping_camera_trajectory.csv')
-    video_path = mount_target.joinpath('raw_video.mp4')
+    video_path = mount_target.joinpath(video_path.name)
     json_path = mount_target.joinpath('imu_data.json')
     mask_path = mount_target.joinpath('slam_mask.png')
 
@@ -110,16 +112,7 @@ def main(input_dir, map_path, docker_image, no_docker_pull, no_mask):
             '--mask_img', str(mask_path)
         ])
 
-    stdout_path = video_dir.joinpath('slam_stdout.txt')
-    stderr_path = video_dir.joinpath('slam_stderr.txt')
-
-    result = subprocess.run(
-        cmd,
-        cwd=str(video_dir),
-        stdout=stdout_path.open('w'),
-        stderr=stderr_path.open('w')
-    )
-    print(result)
+    print("Finish 02_create_map.")
 
 
 if __name__ == "__main__":

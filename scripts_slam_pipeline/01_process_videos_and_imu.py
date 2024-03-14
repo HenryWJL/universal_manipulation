@@ -116,7 +116,8 @@ def main(load_dir):
         symlink_path = os.path.join(dots, rel_path)                
         mp4_path.symlink_to(symlink_path)
 
-    print("Finish processing videos and imu data.")
+    print("Finish 01_process_videos_and_imu.")
+
 
 if __name__ == '__main__':
     if len(sys.argv) == 1:
