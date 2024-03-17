@@ -69,7 +69,8 @@ def imu_synchronize(
 def imu_convert_format(
     load_dir: Path,
     save_dir: Path,
-    start_datetime: datetime
+    start_datetime: datetime,
+    fps: float
     ): 
     """
     convert raw imu data to the formats supported by UMI
@@ -80,6 +81,8 @@ def imu_convert_format(
         save_dir: the directory used for saving imu data
 
         start_datetime: see the directory name of "load_dir" 
+
+        fps: camera frames per second
     """
     ### load raw imu data
     gyro_path = list(load_dir.glob("*gyro.csv"))[0]
@@ -90,15 +93,9 @@ def imu_convert_format(
     imu_data = imu_synchronize(gyro_data, accel_data)
     ### get delta time (seconds) between neighbor timestamps
     timestamp = imu_data[ :, 0]
-    """
-    Remarks: The unit of timestamp difference is not nanoseconds
-    """
-    timestamp[1: ] = (timestamp[1: ] - timestamp[: -1]) / 10e8
+    timestamp[1: ] = (timestamp[1: ] - timestamp[: -1]) / 1e9
     timestamp[0] = 0.0
-    ### get fps
-    delta_mean = timestamp.sum() / (timestamp.shape - 1)
-    fps = 1 / delta_mean
-    ### get timestamp increments w.r.t the starting time
+    ### get timestamp increments (seconds) w.r.t the starting time
     timestamp_inc = np.array([
         timestamp[: (i+1)].sum()
         for i in range(timestamp.shape[0])
@@ -116,6 +113,10 @@ def imu_convert_format(
                     "samples": [],
                     "name": "Gyroscope",
                     "units": "rad/s"
+                },
+                "CORI": {
+                    "samples": [],
+                    "name": "CameraOrientation"
                 }
             },
             "device name": "Mobile Phone"
@@ -131,25 +132,30 @@ def imu_convert_format(
         imu_utc = imu_utc.strftime(r"%Y-%m-%dT%H:%M:%S.%fZ")
         imu_utc = imu_utc[: -4] + "Z"  # convert microsecond to millisecond
         ### dump imu data
+        cts = float(timestamp_inc[i] * 1e3)  # millisecond timestamps
         gyro = imu_data[i, 0: 3].tolist()
         accel = imu_data[i, 3: 6].tolist()
-        """
-        Remarks: "cts" and "temperature" are not considered
-        """
         gyro_data = {
             "value": gyro,
-            "cts": 0.0,
+            "cts": cts,
             "date": imu_utc,
             "temperature [\u2103]": 0.0
         }
         accel_data = {
             "value": accel,
-            "cts": 0.0,
+            "cts": cts,
             "date": imu_utc,
             "temperature [\u2103]": 0.0
         }
+        # CORI: the quaternion pose of camera (set to zeros)
+        cori_data = {
+            "value": [0, 0, 0, 0],
+            "cts": cts,
+            "date": imu_utc
+        }
         imu_file["1"]["streams"]["GYRO"]["samples"].append(gyro_data)
         imu_file["1"]["streams"]["ACCL"]["samples"].append(accel_data)
+        imu_file["1"]["streams"]["CORI"]["samples"].append(cori_data)
 
     imu_save_path = save_dir.joinpath("imu_data.json")
     json.dump(imu_file, open(str(imu_save_path), "w"))

@@ -1,5 +1,6 @@
 import os
 import sys
+import cv2
 import click
 import shutil
 from pathlib import Path
@@ -101,14 +102,19 @@ def main(load_dir):
         out_video_path = this_out_dir.joinpath(mp4_path.name)  # <load_dir>/demos/<out_dname>/VID_*.mp4
         shutil.move(mp4_path, out_video_path)
 
-        ### process IMU data and move them to target directories
+        ### get camera fps
+        cp = cv2.VideoCapture(str(out_video_path))
+        fps = cp.get(cv2.CAP_PROP_FPS)
+        cp.release()
+
+        ### convert IMU data to certain formats and move them to target directories
         imu_load_dir = load_dir.joinpath(mp4_path.name[4: -4])
         """
         Remarks: 
             We assume that videos and imu data are recorded simultaneously.
             But actually, they are not.
         """
-        imu_convert_format(imu_load_dir, this_out_dir, start_date)
+        imu_convert_format(imu_load_dir, this_out_dir, start_date, fps)
 
         ### create symbolic link for all videos. Links are in "raw_videos"
         dots = os.path.join(*['..'] * len(mp4_path.parent.relative_to(load_dir).parts))
