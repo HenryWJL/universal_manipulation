@@ -1,0 +1,113 @@
+Mask img size mismatch! Converting [640 x 480] to [960 x 720]
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: Monocular-Inertial
+Loading settings from /ORB_SLAM3/Examples/Monocular-Inertial/gopro10_maxlens_fisheye_setting_v1_720.yaml
+	-Loaded camera 1
+	-Loaded image info
+	-Loaded IMU calibration
+	-Loaded ORB settings
+	-Loaded viewer settings
+	-Loaded Atlas settings
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Kannala-Brandt): [ 282.907 282.907 480 360 -0.0174584 -0.0280825 0.0128327 -0.0045198 ]
+	-Original image size: [ 960 , 720 ]
+	-Current image size: [ 960 , 720 ]
+	-Sequence FPS: 60
+	-Gyro noise: 0.0015
+	-Accelerometer noise: 0.017
+	-Gyro walk: 5e-05
+	-Accelerometer walk: 0.0055
+	-IMU frequency: 200
+	-Features per image: 1250
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+There are 1 cameras in the atlas
+Camera 0 is fisheye
+Discard points further than 20 m from current camera
+Video opened using backend FFMPEG
+There are 181 frames in total
+video FPS 27.4549
+line 1873 keyframes 0MapPoints0
+n_lost_frames=1
+Video FPS: 27.4549
+ORB-SLAM 3 running at: 35.2034 FPS
+init_success=0
+ tag_init_success=0
+n_lost_frames=2
+init_success=0
+ tag_init_success=0
+n_lost_frames=3
+init_success=0
+ tag_init_success=0
+n_lost_frames=4
+init_success=0
+ tag_init_success=0
+n_lost_frames=5
+init_success=0
+ tag_init_success=0
+n_lost_frames=6
+init_success=0
+ tag_init_success=0
+n_lost_frames=7
+init_success=0
+ tag_init_success=0
+n_lost_frames=8
+init_success=0
+ tag_init_success=0
+n_lost_frames=9
+init_success=0
+ tag_init_success=0
+n_lost_frames=10
+Failed to init: n_keypoints 5918 time_since_init_frame0.3278099447513812
+n_lost_frames=11
+n_lost_frames=12
+init_success=0
+ tag_init_success=0
+n_lost_frames=13
+init_success=0
+ tag_init_success=0
+n_lost_frames=14
+init_success=0
+ tag_init_success=0
+n_lost_frames=15
+init_success=0
+ tag_init_success=0
+n_lost_frames=16
+init_success=0
+ tag_init_success=0
+n_lost_frames=17
+init_success=0
+ tag_init_success=0
+n_lost_frames=18
+init_success=0
+ tag_init_success=0
+n_lost_frames=19
+init_success=0
+ tag_init_success=0
+n_lost_frames=20
+init_success=0
+ tag_init_success=0
+n_lost_frames=21
+Failed to init: n_keypoints 5801 time_since_init_frame0.32780994475138114
+n_lost_frames=22
+n_lost_frames=23
+init_success=1
+First KF:0; Map init KF:0

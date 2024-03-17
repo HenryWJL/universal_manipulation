@@ -60,7 +60,7 @@ def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_dock
     else:
         map_path = pathlib.Path(os.path.expanduser(map_path)).absolute()
 
-    assert map_path.is_file(), "No mapping file available!"
+    assert map_path.is_file(), "Mapping file not found!"
 
     ### pull docker image
     if not no_docker_pull:
@@ -110,13 +110,25 @@ def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_dock
             '/ORB_SLAM3/Examples/Monocular-Inertial/gopro_slam',
             '--vocabulary', '/ORB_SLAM3/Vocabulary/ORBvoc.txt',
             '--setting', '/ORB_SLAM3/Examples/Monocular-Inertial/gopro10_maxlens_fisheye_setting_v1_720.yaml',
-            '--input_video', str(video_path),
+            '--input_video', str(video_path),      # TODO replace the above yaml file
             '--input_imu_json', str(json_path),
             '--output_trajectory_csv', str(csv_path),
             '--load_map', str(map_mount_target),
             '--mask_img', str(mask_path),
             '--max_lost_frames', str(max_lost_frames)
         ]
+
+        stdout_path = video_dir.joinpath('slam_stdout.txt')
+        stderr_path = video_dir.joinpath('slam_stderr.txt')
+        result = subprocess.run(
+            cmd,
+            cwd=str(video_dir),
+            stdout=stdout_path.open('w'),
+            stderr=stderr_path.open('w')
+        )
+        if result.returncode != 0:
+            print(f"SLAM failed! Error in {str(video_dir)}.")
+            exit(1)
 
     print("Finish 03_batch_slam")
 

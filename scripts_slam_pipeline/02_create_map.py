@@ -49,7 +49,7 @@ def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask)
     video_dir = pathlib.Path(os.path.expanduser(input_dir)).absolute() # <session>/demos/mapping
     video_path = list(video_dir.glob("VID*.mp4"))[0]
     for file in [video_path, video_dir.joinpath("imu_data.json")]:
-        assert file.is_file(), "No such files!"
+        assert file.is_file(), "IMU data not found!"
 
     if map_path is None:
         map_path = video_dir.joinpath('map_atlas.osa')
@@ -103,7 +103,7 @@ def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask)
         '/ORB_SLAM3/Examples/Monocular-Inertial/gopro_slam',
         '--vocabulary', '/ORB_SLAM3/Vocabulary/ORBvoc.txt',
         '--setting', '/ORB_SLAM3/Examples/Monocular-Inertial/gopro10_maxlens_fisheye_setting_v1_720.yaml',
-        '--input_video', str(video_path),
+        '--input_video', str(video_path),     # TODO replace the above yaml file
         '--input_imu_json', str(json_path),
         '--output_trajectory_csv', str(csv_path),
         '--save_map', str(map_mount_target)
@@ -113,7 +113,20 @@ def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask)
             '--mask_img', str(mask_path)
         ])
 
-    print("Finish 02_create_map.")
+    stdout_path = video_dir.joinpath('slam_stdout.txt')
+    stderr_path = video_dir.joinpath('slam_stderr.txt')
+    result = subprocess.run(
+        cmd,
+        cwd=str(video_dir),
+        stdout=stdout_path.open('w'),
+        stderr=stderr_path.open('w')
+    )
+    if result.returncode != 0:
+        print("SLAM failed!")
+        exit(1)
+
+    else:
+        print("Finish 02_create_map.")
 
 
 if __name__ == "__main__":
