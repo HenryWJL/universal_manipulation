@@ -44,12 +44,10 @@ class Dataset:
     def prepare(self):
         # extract gyro data
         gyro_path = list(self.imu_dir.glob("*gyro.csv"))[0]
-        gyro_data = np.loadtxt(open(str(gyro_path), 'rb'), delimiter=",")
-        gyro_data = gyro_data[ :, [3, 0, 1, 2]]  # place column_3 (timestamp) at the beginning 
+        gyro_data = np.loadtxt(open(str(gyro_path), 'rb'), delimiter=",") 
         # extract acceleration data
         accel_path = list(self.imu_dir.glob("*accel.csv"))[0]
         accel_data = np.loadtxt(open(str(accel_path), 'rb'), delimiter=",")
-        accel_data = accel_data[ :, [3, 0, 1, 2]]  # place column_3 (timestamp) at the beginning
         # transform mp4 videos to image frames
         video_timestamp_path = list(self.imu_dir.glob("*timestamps.csv"))[0]
         video_timestamp = np.loadtxt(open(str(video_timestamp_path), 'rb'), delimiter=",")
@@ -61,35 +59,50 @@ class Dataset:
             cv2.imwrite(str(self.image_save_dir.joinpath(f"{int(video_timestamp[time])}.png")), frame)
             
         video_cp.release()
-        # interpolate acceleration, making it synchronize with gyro
-        idx_accel = 0
-        idx_gyro = 0
-        idx_imu = 0
+        
+        # # interpolate acceleration, making it synchronize with gyro
+        # idx_accel = 0
+        # idx_gyro = 0
+        # idx_imu = 0
+        # num_gyro = gyro_data.shape[0]
+        # num_accel = accel_data.shape[0]
+        # imu_data = np.zeros((num_gyro, 7), dtype=np.float32)
+        # while (accel_data[0, 0] > gyro_data[idx_gyro, 0]):
+        #     idx_gyro += 1
+
+        # while (idx_accel + 1 < num_accel and idx_gyro < num_gyro):
+        #     # compute timestamp and acceleration difference
+        #     delta_time_accel = accel_data[(idx_accel + 1), 0] - accel_data[idx_accel, 0]
+        #     delta_accel = accel_data[(idx_accel + 1), 1: 4] - accel_data[idx_accel, 1: 4]
+        #     # combine imu data
+        #     while (idx_gyro < num_gyro and accel_data[idx_accel + 1, 0] >= gyro_data[idx_gyro, 0]):
+        #         imu_data[idx_imu, 0] = gyro_data[idx_gyro, 0]
+        #         # interpolate acceleration
+        #         imu_data[idx_imu, 4: 7] = accel_data[idx_accel, 1: 4] + \
+        #             (gyro_data[idx_gyro, 0] - accel_data[idx_accel, 0]) * delta_accel / delta_time_accel
+        #         # dump gyro data
+        #         imu_data[idx_imu, 1: 4] = gyro_data[idx_gyro, 1: 4]
+
+        #         idx_gyro += 1
+        #         idx_imu += 1
+
+        #     idx_accel += 1
+
+        # imu_data = np.delete(imu_data, range(idx_imu, num_gyro), axis=0)
+
         num_gyro = gyro_data.shape[0]
         num_accel = accel_data.shape[0]
         imu_data = np.zeros((num_gyro, 7), dtype=np.float32)
-        while (accel_data[0, 0] > gyro_data[idx_gyro, 0]):
-            idx_gyro += 1
-
-        while (idx_accel + 1 < num_accel and idx_gyro < num_gyro):
-            # compute timestamp and acceleration difference
-            delta_time_accel = accel_data[(idx_accel + 1), 0] - accel_data[idx_accel, 0]
-            delta_accel = accel_data[(idx_accel + 1), 1: 4] - accel_data[idx_accel, 1: 4]
-            # combine imu data
-            while (idx_gyro < num_gyro and accel_data[idx_accel + 1, 0] >= gyro_data[idx_gyro, 0]):
-                imu_data[idx_imu, 0] = gyro_data[idx_gyro, 0]
-                # interpolate acceleration
-                imu_data[idx_imu, 4: 7] = accel_data[idx_accel, 1: 4] + \
-                    (gyro_data[idx_gyro, 0] - accel_data[idx_accel, 0]) * delta_accel / delta_time_accel
-                # dump gyro data
-                imu_data[idx_imu, 1: 4] = gyro_data[idx_gyro, 1: 4]
-
-                idx_gyro += 1
-                idx_imu += 1
-
-            idx_accel += 1
-
-        imu_data = np.delete(imu_data, range(idx_imu, num_gyro), axis=0)
+        if num_gyro >= num_accel:
+            imu_data[:, 0] = accel_data[:, 3]
+            imu_data[:, 4: 7] = accel_data[:, 0: 3]
+            imu_data[:, 1: 4] = gyro_data[0: num_accel, 0: 3]
+    
+        else:
+            imu_data[:, 0] = gyro_data[:, 3]
+            imu_data[:, 4: 7] = accel_data[0: num_gyro, 0: 3]
+            imu_data[:, 1: 4] = gyro_data[:, 0: 3]
+        
         np.savetxt(str(self.save_dir.joinpath("imu0.csv")), imu_data, delimiter=",", fmt="%f")
             
     
