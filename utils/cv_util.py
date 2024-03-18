@@ -55,7 +55,7 @@ def parse_fisheye_intrinsics(json_data: dict) -> Dict[str, np.ndarray]:
         "stabelized": false
     }
     """
-    assert json_data['intrinsic_type'] == 'FISHEYE'
+    assert json_data['intrinsic_type'] == 'FISHEYE'  # TODO
     intr_data = json_data['intrinsics']
     
     # img size
@@ -67,7 +67,7 @@ def parse_fisheye_intrinsics(json_data: dict) -> Dict[str, np.ndarray]:
     px = intr_data['principal_pt_x']
     py = intr_data['principal_pt_y']
     
-    # Kannala-Brandt non-linear parameters for distortion
+    # Kannala-Brandt non-linear parameters for distortion  # TODO
     kb8 = [
         intr_data['radial_distortion_1'],
         intr_data['radial_distortion_2'],
@@ -201,7 +201,7 @@ def detect_localize_aruco_tags(
             continue
         
         marker_size_m = marker_size_map[this_id]
-        undistorted = cv2.fisheye.undistortPoints(this_corners, K, D, P=K)
+        undistorted = cv2.fisheye.undistortPoints(this_corners, K, D, P=K)  # TODO
         rvec, tvec, markerPoints = cv2.aruco.estimatePoseSingleMarkers(
             undistorted, marker_size_m, K, np.zeros((1,5)))
         tag_dict[this_id] = {
