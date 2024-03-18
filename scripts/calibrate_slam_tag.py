@@ -24,28 +24,27 @@ SOFTWARE.
 
 import sys
 import os
-
-ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-sys.path.append(ROOT_DIR)
-os.chdir(ROOT_DIR)
-
-# %%
 import click
 import numpy as np
 import pickle
 import json
 import pandas as pd
 from scipy.spatial.transform import Rotation
-from umi.common.pose_util import pose_to_mat
+
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(ROOT_DIR)
+os.chdir(ROOT_DIR)
+
+from utils.pose_util import pose_to_mat
 from skfda.exploratory.stats import geometric_median
 
-# %%
 @click.command()
 @click.option('-d', '--tag_detection', required=True, help='Tag detection pkl path')
 @click.option('-c', '--csv_trajectory', default=None, help='CSV trajectory from SLAM (not mapping)')
 @click.option('-o', '--output', required=True, help='output json')
 @click.option('-tid', '--tag_id', type=int, default=13)
 @click.option('-k', '--keyframe_only', is_flag=True, default=False)
+
 def main(tag_detection, csv_trajectory, output, tag_id, keyframe_only):
     """
     Please use camera_trajectory.csv produced by re-localizing (initializing)
@@ -133,6 +132,5 @@ def main(tag_detection, csv_trajectory, output, tag_id, keyframe_only):
     print(f"Saved result to {output}")
 
 
-# %%
 if __name__ == "__main__":
     main()
