@@ -39,7 +39,7 @@ from utils.cv_util import draw_predefined_mask
 
 @click.command()
 @click.option('-i', '--input_dir', required=True, help='Directory for loading mapping video')
-@click.option('-r', '--resolution', type=tuple, default=(480, 640), help='image resolution')
+@click.option('-r', '--resolution', type=tuple, default=(2592, 1952), help='image resolution')
 @click.option('-m', '--map_path', default=None, help='ORB_SLAM3 *.osa map atlas file')
 @click.option('-d', '--docker_image', default="chicheng/orb_slam3:latest")
 @click.option('-np', '--no_docker_pull', is_flag=True, default=False, help="pull docker image from docker hub")

@@ -30,7 +30,7 @@ from typing import Dict, Tuple
 
 # =================== intrinsics ===================
 
-def parse_fisheye_intrinsics(json_data: dict) -> Dict[str, np.ndarray]:
+def parse_pinhole_intrinsics(json_data: dict) -> Dict[str, np.ndarray]:
     """
     Reads camera intrinsics from OpenCameraImuCalibration to opencv format.
     Example:
@@ -87,10 +87,10 @@ def parse_fisheye_intrinsics(json_data: dict) -> Dict[str, np.ndarray]:
     return opencv_intr_dict
 
 
-def convert_fisheye_intrinsics_resolution(
+def convert_pinhole_intrinsics_resolution(
         opencv_intr_dict: Dict[str, np.ndarray], 
         target_resolution: Tuple[int, int]
-        ) -> Dict[str, np.ndarray]:
+    ) -> Dict[str, np.ndarray]:
     """
     Convert fisheye intrinsics parameter to a different resolution,
     assuming that images are not cropped in the vertical dimension,
@@ -155,87 +155,80 @@ def parse_aruco_config(aruco_config_dict: dict):
     """
     aruco_dict = get_aruco_dict(**aruco_config_dict['aruco_dict'])
 
-    n_markers = len(aruco_dict.bytesList)
+    n_markers = len(aruco_dict.bytesList)  # the number of ids in a Dict
     marker_size_map = aruco_config_dict['marker_size_map']
     default_size = marker_size_map.get('default', None)
     
-    out_marker_size_map = dict()
+    out_marker_size = dict()
     for marker_id in range(n_markers):
         size = default_size
         if marker_id in marker_size_map:
             size = marker_size_map[marker_id]
-        out_marker_size_map[marker_id] = size
+
+        out_marker_size[marker_id] = size
     
     result = {
         'aruco_dict': aruco_dict,
-        'marker_size_map': out_marker_size_map
+        'marker_size_map': out_marker_size
     }
+
     return result
 
 
-def get_aruco_dict(predefined:str
-                   ) -> cv2.aruco.Dictionary:
-    return cv2.aruco.getPredefinedDictionary(
-        getattr(cv2.aruco, predefined))
+def get_aruco_dict(
+        predefined: str
+    ) -> cv2.aruco.Dictionary:
+    aruco_dict = cv2.aruco.getPredefinedDictionary(
+        getattr(cv2.aruco, predefined)
+    )
+
+    return aruco_dict
+
 
 def detect_localize_aruco_tags(
         img: np.ndarray, 
         aruco_dict: cv2.aruco.Dictionary, 
         marker_size_map: Dict[int, float], 
-        fisheye_intr_dict: Dict[str, np.ndarray], 
-        refine_subpix: bool=True):
-    K = fisheye_intr_dict['K']
-    D = fisheye_intr_dict['D']
+        pinhole_intr_dict: Dict[str, np.ndarray], 
+        refine_subpix: bool=True
+    ):
+    K = pinhole_intr_dict['K']
+    D = pinhole_intr_dict['D']
     param = cv2.aruco.DetectorParameters()
     if refine_subpix:
         param.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-    corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(
-        image=img, dictionary=aruco_dict, parameters=param)
+
+    corners, ids,_ = cv2.aruco.detectMarkers(
+        image=img,
+        dictionary=aruco_dict,
+        parameters=param
+    )
+    # no corner detected
     if len(corners) == 0:
         return dict()
 
     tag_dict = dict()
     for this_id, this_corners in zip(ids, corners):
         this_id = int(this_id[0])
+        # invalid marker id
         if this_id not in marker_size_map:
             continue
         
-        marker_size_m = marker_size_map[this_id]
-        undistorted = cv2.fisheye.undistortPoints(this_corners, K, D, P=K)  # TODO
-        rvec, tvec, markerPoints = cv2.aruco.estimatePoseSingleMarkers(
-            undistorted, marker_size_m, K, np.zeros((1,5)))
+        marker_size = marker_size_map[this_id]
+        rvec, tvec,_ = cv2.aruco.estimatePoseSingleMarkers(
+            this_corners,
+            marker_size,
+            K,
+            D
+        )
         tag_dict[this_id] = {
             'rvec': rvec.squeeze(),
             'tvec': tvec.squeeze(),
             'corners': this_corners.squeeze()
         }
+
     return tag_dict
 
-def get_charuco_board(
-        aruco_dict=cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100), 
-        tag_id_offset=50,
-        grid_size=(8, 5), square_length_mm=50, tag_length_mm=30):
-    
-    aruco_dict = cv2.aruco.Dictionary(
-        aruco_dict.bytesList[tag_id_offset:], 
-        aruco_dict.markerSize)
-    board = cv2.aruco.CharucoBoard(
-        size=grid_size,
-        squareLength=square_length_mm/1000,
-        markerLength=tag_length_mm/1000,
-        dictionary=aruco_dict)
-    return board
-
-def draw_charuco_board(board, dpi=300, padding_mm=15):
-    grid_size = np.array(board.getChessboardSize())
-    square_length_mm = board.getSquareLength() * 1000
-
-    mm_per_inch = 25.4
-    board_size_pixel = (grid_size * square_length_mm + padding_mm * 2) / mm_per_inch * dpi
-    board_size_pixel = board_size_pixel.round().astype(np.int64)
-    padding_pixel = int(padding_mm / mm_per_inch * dpi)
-    board_img = board.generateImage(outSize=board_size_pixel, marginSize=padding_pixel)
-    return board_img
 
 def get_gripper_width(tag_dict, left_id, right_id, nominal_z=0.072, z_tolerance=0.008):
     zmax = nominal_z + z_tolerance

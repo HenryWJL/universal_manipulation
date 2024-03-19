@@ -8,22 +8,41 @@ def str2int(string: str):
     
     else:
         return int(string)
-
+    
 
 def mp4_get_start_datetime(mp4_path: Path) -> datetime:
     """
     Return: datetime (Y, MON, D, H, MIN, S)
     """
-    start_date = mp4_path.name[4: -4]
+    start_date = mp4_path.name[0: -4]
     year = str2int(start_date[0: 4])
-    month = str2int(start_date[4: 6])
-    day = str2int(start_date[6: 8])
-    hour = str2int(start_date[9: 11])
-    min = str2int(start_date[11: 13])
-    sec = str2int(start_date[13: ])
+    month = str2int(start_date[5: 7])
+    day = str2int(start_date[8: 10])
+    hour = str2int(start_date[11: 13])
+    min = str2int(start_date[14: 16])
+    sec = str2int(start_date[17: ])
     """
     Remarks: Microseconds are not taken into account
     """
     mp4_start_datetime = datetime(year, month, day, hour, min, sec)
     
     return mp4_start_datetime
+
+
+# def mp4_get_start_datetime(mp4_path: Path) -> datetime:
+#     """
+#     Return: datetime (Y, MON, D, H, MIN, S)
+#     """
+#     start_date = mp4_path.name[4: -4]
+#     year = str2int(start_date[0: 4])
+#     month = str2int(start_date[4: 6])
+#     day = str2int(start_date[6: 8])
+#     hour = str2int(start_date[9: 11])
+#     min = str2int(start_date[11: 13])
+#     sec = str2int(start_date[13: ])
+#     """
+#     Remarks: Microseconds are not taken into account
+#     """
+#     mp4_start_datetime = datetime(year, month, day, hour, min, sec)
+    
+#     return mp4_start_datetime
