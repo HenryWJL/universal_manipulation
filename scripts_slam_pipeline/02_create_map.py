@@ -47,7 +47,7 @@ from utils.cv_util import draw_predefined_mask
 
 def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask):
     video_dir = pathlib.Path(os.path.expanduser(input_dir)).absolute() # <session>/demos/mapping
-    video_path = list(video_dir.glob("VID*.mp4"))[0]
+    video_path = list(video_dir.glob("*.mp4"))[0]
     for file in [video_path, video_dir.joinpath("imu_data.json")]:
         assert file.is_file(), "IMU data not found!"
 

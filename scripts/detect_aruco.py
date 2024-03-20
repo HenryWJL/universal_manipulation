@@ -74,7 +74,7 @@ def main(input, output, intrinsics_json, aruco_yaml, num_workers):
     
     """
     # load intrinsics
-    raw_fisheye_intr = parse_pinhole_intrinsics(json.load(open(intrinsics_json, 'r')))
+    raw_pinhole_intr = parse_pinhole_intrinsics(json.load(open(intrinsics_json, 'r')))
 
     results = list()
     with av.open(os.path.expanduser(input)) as in_container:
@@ -84,8 +84,10 @@ def main(input, output, intrinsics_json, aruco_yaml, num_workers):
         ### get recorded videos' resolution
         in_res = np.array([in_stream.height, in_stream.width])[::-1]
         ### adjust camera intrinsics (resolution correction)
-        fisheye_intr = convert_pinhole_intrinsics_resolution(
-            opencv_intr_dict=raw_fisheye_intr, target_resolution=in_res)
+        pinhole_intr = convert_pinhole_intrinsics_resolution(
+            opencv_intr_dict=raw_pinhole_intr,
+            target_resolution=in_res
+        )
         ### detect ArUco markers in each video frame
         for i, frame in tqdm(enumerate(in_container.decode(in_stream)), total=in_stream.frames):
             img = frame.to_ndarray(format='rgb24')
@@ -102,7 +104,7 @@ def main(input, output, intrinsics_json, aruco_yaml, num_workers):
                 img=img,
                 aruco_dict=aruco_dict,
                 marker_size_map=marker_size_map,
-                fisheye_intr_dict=fisheye_intr,
+                pinhole_intr_dict=pinhole_intr,
                 refine_subpix=True
             )
             """

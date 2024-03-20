@@ -43,7 +43,7 @@ os.chdir(ROOT_DIR)
 
 def main(input_dir, camera_intrinsics, aruco_yaml, num_workers):
     input_dir = pathlib.Path(os.path.expanduser(input_dir))  # <session>/demos
-    input_video_dirs = [x.parent for x in input_dir.glob('*/VID*.mp4')]
+    input_video_dirs = [x.parent for x in input_dir.glob('*/*.mp4')]
     print(f'Find {len(input_video_dirs)} video directories')
     
     assert os.path.isfile(camera_intrinsics), "Camera intrinsics not found!"
@@ -53,7 +53,7 @@ def main(input_dir, camera_intrinsics, aruco_yaml, num_workers):
 
     for video_dir in tqdm(input_video_dirs):
         video_dir = video_dir.absolute()
-        video_path = list(video_dir.glob("VID*.mp4"))[0]
+        video_path = list(video_dir.glob("*.mp4"))[0]
         pkl_path = video_dir.joinpath('tag_detection.pkl')
 
         if pkl_path.is_file():

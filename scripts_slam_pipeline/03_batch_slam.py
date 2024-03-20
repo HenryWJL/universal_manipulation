@@ -50,8 +50,8 @@ from utils.cv_util import draw_predefined_mask
 
 def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_docker_pull):
     input_dir = pathlib.Path(os.path.expanduser(input_dir)).absolute()  # <session>/demos
-    input_video_dirs = [x.parent for x in input_dir.glob('demo*/VID*.mp4')]
-    input_video_dirs += [x.parent for x in input_dir.glob('map*/VID*.mp4')]  # no gripper calibration videos are needed
+    input_video_dirs = [x.parent for x in input_dir.glob('demo*/*.mp4')]
+    input_video_dirs += [x.parent for x in input_dir.glob('map*/*.mp4')]  # no gripper calibration videos are needed
     print(f'Find {len(input_video_dirs)} video directories')
     
     if map_path is None:
@@ -77,7 +77,7 @@ def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_dock
 
     for video_dir in tqdm(input_video_dirs):
         video_dir = video_dir.absolute()
-        video_path = list(video_dir.glob("VID*.mp4"))[0]
+        video_path = list(video_dir.glob("*.mp4"))[0]
         # if camear trajectory data already exist, skip
         if video_dir.joinpath('camera_trajectory.csv').is_file():
             print(f"\"camera_trajectory.csv\" already exists in {video_dir.name}, skip.")
@@ -96,7 +96,7 @@ def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_dock
             slam_mask, color=255, mirror=True, gripper=False, finger=True)
         cv2.imwrite(str(mask_write_path.absolute()), slam_mask)
         
-        map_mount_source = map_path
+        map_mount_source = map_path  # <session>/demos/mapping/map_atlas.osa
         map_mount_target = pathlib.Path('/map').joinpath(map_mount_source.name)
         
         ### mapping
