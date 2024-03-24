@@ -4,6 +4,8 @@ from pathlib import Path
 from datetime import datetime
 from datetime import timedelta
 
+from .timecode_util import get_timestamp_increment
+
 
 def imu_synchronize(
     vel_data: list[dict],
@@ -24,9 +26,9 @@ def imu_synchronize(
     ]
 
     return np.array(imu_data)
-    
 
-def imu_convert_format(
+
+def imu_convert_umi_format(
     load_dir: Path,
     save_dir: Path,
     start_datetime: datetime,
@@ -42,7 +44,7 @@ def imu_convert_format(
 
         start_datetime: see the directory name of "load_dir" 
 
-        fps: camera frames per second
+        fps: camera frames per second, required if mode is "slam"
     """
     ### load raw imu data
     vel_path = list(load_dir.glob("rotations.json"))[0]
@@ -51,15 +53,9 @@ def imu_convert_format(
     accel_data = json.load(open(str(accel_path), 'rb'))["accelerations"]
     ### synchronize gyro and accel data
     imu_data = imu_synchronize(vel_data, accel_data)
-    ### get delta time (seconds) between neighbor timestamps
+    ### get timestamp increments
     timestamp = imu_data[:, 0]
-    timestamp[1: ] = (timestamp[1: ] - timestamp[: -1]) / 1e6
-    timestamp[0] = 0.0
-    ### get timestamp increments (seconds) w.r.t the starting time
-    timestamp_inc = np.array([
-        timestamp[ :(i+1)].sum()
-        for i in range(timestamp.shape[0])
-    ])
+    timestamp_inc = get_timestamp_increment(timestamp)
     ### convert formats
     imu_file = {
         "1": {

@@ -39,7 +39,7 @@ import rosbag
 import rospy
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import Imu
-import time, sys, os
+import sys, os
 import argparse
 import cv2
 import numpy as np

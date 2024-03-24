@@ -33,13 +33,10 @@ import numpy as np
 import json
 import math
 import collections
-import scipy.ndimage as sn
 import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
-from tqdm import tqdm
 import av
-from exiftool import ExifToolHelper
 
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(ROOT_DIR)

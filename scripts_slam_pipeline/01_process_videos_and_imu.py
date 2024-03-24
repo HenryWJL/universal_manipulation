@@ -11,9 +11,9 @@ sys.path.append(ROOT_DIR)
 os.chdir(ROOT_DIR)
 
 from utils.timecode_util import mp4_get_start_datetime
-from utils.imu_util import imu_convert_format
+from utils.imu_util import imu_convert_umi_format
 
-@click.command(help="Transform raw IMU data to UMI supported formats and move videos as well as processed IMU data to target directories.")
+@click.command(help="Convert raw IMU data to UMI supported formats and move videos as well as processed IMU data to target directories.")
 @click.option("-l", "--load_dir", type=str, required=True, help="Directory where videos and raw IMU data are stored.")
 
 def main(load_dir):
@@ -115,7 +115,7 @@ def main(load_dir):
             We assume that videos and imu data are recorded simultaneously.
             But actually, they are not.
         """
-        imu_convert_format(imu_load_dir, this_out_dir, start_date, fps)
+        imu_convert_umi_format(imu_load_dir, this_out_dir, start_date, fps)
 
         ### create symbolic link for all videos. Links are in "raw_videos"
         dots = os.path.join(*['..'] * len(mp4_path.parent.relative_to(load_dir).parts))

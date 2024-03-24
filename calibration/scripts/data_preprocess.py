@@ -1,9 +1,29 @@
 import os
 import sys
 import cv2
+import click
 import argparse
 import numpy as np
 from pathlib import Path
+
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(ROOT_DIR)
+os.chdir(ROOT_DIR)
+
+from utils.timecode_util import convert_datetime
+
+@click.command(help="Convert raw videos and IMU data to Kalibr supported formats.")
+@click.option("-l", "--load_dir", type=str, required=True, help="Directory where videos and raw IMU data are stored.")
+
+def main(load_dir):
+    load_dir = Path(os.path.expanduser(load_dir)).absolute()
+    save_dir = load_dir.joinpath("dataset")
+    if not save_dir.is_dir():
+        save_dir.mkdir()
+
+    date = load_dir.name
+    start_datetime = convert_datetime(date)
+    
 
 
 def make_parser():
@@ -60,35 +80,6 @@ class Dataset:
             
         video_cp.release()
         
-        # # interpolate acceleration, making it synchronize with gyro
-        # idx_accel = 0
-        # idx_gyro = 0
-        # idx_imu = 0
-        # num_gyro = gyro_data.shape[0]
-        # num_accel = accel_data.shape[0]
-        # imu_data = np.zeros((num_gyro, 7), dtype=np.float32)
-        # while (accel_data[0, 0] > gyro_data[idx_gyro, 0]):
-        #     idx_gyro += 1
-
-        # while (idx_accel + 1 < num_accel and idx_gyro < num_gyro):
-        #     # compute timestamp and acceleration difference
-        #     delta_time_accel = accel_data[(idx_accel + 1), 0] - accel_data[idx_accel, 0]
-        #     delta_accel = accel_data[(idx_accel + 1), 1: 4] - accel_data[idx_accel, 1: 4]
-        #     # combine imu data
-        #     while (idx_gyro < num_gyro and accel_data[idx_accel + 1, 0] >= gyro_data[idx_gyro, 0]):
-        #         imu_data[idx_imu, 0] = gyro_data[idx_gyro, 0]
-        #         # interpolate acceleration
-        #         imu_data[idx_imu, 4: 7] = accel_data[idx_accel, 1: 4] + \
-        #             (gyro_data[idx_gyro, 0] - accel_data[idx_accel, 0]) * delta_accel / delta_time_accel
-        #         # dump gyro data
-        #         imu_data[idx_imu, 1: 4] = gyro_data[idx_gyro, 1: 4]
-
-        #         idx_gyro += 1
-        #         idx_imu += 1
-
-        #     idx_accel += 1
-
-        # imu_data = np.delete(imu_data, range(idx_imu, num_gyro), axis=0)
 
         num_gyro = gyro_data.shape[0]
         num_accel = accel_data.shape[0]
