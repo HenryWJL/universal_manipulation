@@ -1,10 +1,15 @@
+import cv2
 import json
 import numpy as np
 from pathlib import Path
 from datetime import datetime
 from datetime import timedelta
 
-from .timecode_util import get_timestamp_increment
+from .timecode_util import (
+    get_timestamp_increment,
+    date2datetime,
+    datetime2timestamp
+    )
 
 
 def imu_synchronize(
@@ -12,7 +17,7 @@ def imu_synchronize(
     accel_data: list[dict]
     ):
     """Align velocity data with acceleration data"""
-    imu_data = [
+    imu_data = np.array([
         [
             vel_data[i]["time_usec"],
             vel_data[i]["x"],
@@ -23,15 +28,63 @@ def imu_synchronize(
             accel_data[i]["z"]
         ]
         for i in range(len(vel_data))
-    ]
+    ])
 
-    return np.array(imu_data)
+    return imu_data
+
+
+def imu_convert_kalibr_format(
+    load_dir: Path,
+    save_dir: Path    
+    ):
+    ### get start datetime
+    start_datetime = date2datetime(load_dir.name)
+    ### load camera frame timestamps
+    frame_ts_path = list(load_dir.glob("frames.json"))[0]
+    frame_ts = json.load(open(str(frame_ts_path), 'rb'))["frames"]
+    frame_timestamp = np.array([
+        frame_ts[i]["time_usec"]
+        for i in range(len(frame_ts))
+    ])
+    ### get frame timestamp increments
+    frame_ts_inc = get_timestamp_increment(frame_timestamp)
+    ### save video frames
+    video_path = list(load_dir.glob("video.mp4"))[0]
+    video_cp = cv2.VideoCapture(str(video_path))
+    for _, ts_inc in enumerate(frame_ts_inc):
+        success, frame = video_cp.read()
+        if not success:
+            break
+
+        delta_time = timedelta(seconds=float(ts_inc))
+        frame_datetime = start_datetime + delta_time
+        fname = datetime2timestamp(frame_datetime)
+        img_save_path = save_dir.joinpath(f"cam0/{fname}.png")
+        cv2.imwrite(str(img_save_path), frame)
+    ### load raw imu data
+    vel_path = list(load_dir.glob("rotations.json"))[0]
+    accel_path = list(load_dir.glob("accelerations.json"))[0]
+    vel_data = json.load(open(str(vel_path), 'rb'))["rotations"]
+    accel_data = json.load(open(str(accel_path), 'rb'))["accelerations"]
+    ### synchronize gyro and accel data
+    imu_data = imu_synchronize(vel_data, accel_data)
+    ### get timestamp increments
+    imu_timestamp = imu_data[:, 0]
+    imu_ts_inc = get_timestamp_increment(imu_timestamp)
+    ### save imu data
+    for i in range(imu_data.shape[0]):
+        delta_time = timedelta(seconds=float(imu_ts_inc))
+        imu_datetime = start_datetime + delta_time
+        imu_timestamp = datetime2timestamp(imu_datetime)
+        imu_data[i, 0] = float(imu_timestamp)
+
+    imu_save_path = save_dir.joinpath("imu0.csv")
+    np.savetxt(str(imu_save_path), imu_data, delimiter=",", fmt="%f")
 
 
 def imu_convert_umi_format(
     load_dir: Path,
     save_dir: Path,
-    start_datetime: datetime,
     fps: float
     ): 
     """
@@ -46,6 +99,8 @@ def imu_convert_umi_format(
 
         fps: camera frames per second, required if mode is "slam"
     """
+    ### get start datetime
+    start_datetime = date2datetime(load_dir.name)
     ### load raw imu data
     vel_path = list(load_dir.glob("rotations.json"))[0]
     accel_path = list(load_dir.glob("accelerations.json"))[0]

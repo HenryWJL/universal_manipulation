@@ -24,10 +24,27 @@ def get_timestamp_increment(timestamp: np.ndarray):
     return timestamp_inc
 
 
-def convert_datetime(date: str) -> datetime:
-    """
+def datetime2timestamp(datetime: datetime) -> str:
+    """Convert Python datetime to Kalibr timestamp
+
     Params:
-        date: PilotGuru date, directory name (Y_MON_D-H_MIN_SEC)
+        datetime: Python datetime (Y, MON, D, H, MIN, S)
+    
+    Returns:
+        Kalibr timestamp (concat[Python timestamp[s], nsec])
+
+    """
+    sec = str(int(datetime.timestamp()))
+    nsec = str(datetime.microsecond * 1000)
+
+    return (sec + nsec)
+
+
+def date2datetime(date: str) -> datetime:
+    """Convert PilotGuru date to Python datetime
+
+    Params:
+        date: PilotGuru directory name (Y_MON_D-H_MIN_SEC)
     
     Returns:
         Python datetime (Y, MON, D, H, MIN, S)
@@ -50,7 +67,7 @@ def convert_datetime(date: str) -> datetime:
 def mp4_get_start_datetime(mp4_path: Path) -> datetime:
     start_date = mp4_path.name[0: -4]
     
-    return convert_datetime(start_date)
+    return date2datetime(start_date)
 
 
 # def mp4_get_start_datetime(mp4_path: Path) -> datetime:
