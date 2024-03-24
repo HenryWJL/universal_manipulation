@@ -3,7 +3,7 @@ import sys
 import click
 from pathlib import Path
 
-ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(ROOT_DIR)
 os.chdir(ROOT_DIR)
 
@@ -13,6 +13,7 @@ from utils.imu_util import imu_convert_kalibr_format
 @click.option("-l", "--load_dir", type=str, required=True, help="Directory where videos and raw IMU data are stored.")
 
 def main(load_dir):
+    load_dir = os.path.join(ROOT_DIR, load_dir)
     load_dir = Path(os.path.expanduser(load_dir)).absolute()
     save_dir = load_dir.joinpath("dataset")
     if not save_dir.is_dir():

@@ -42,24 +42,31 @@ def imu_convert_kalibr_format(
     ### load camera frame timestamps
     frame_ts_path = list(load_dir.glob("frames.json"))[0]
     frame_ts = json.load(open(str(frame_ts_path), 'rb'))["frames"]
-    frame_timestamp = np.array([
-        frame_ts[i]["time_usec"]
-        for i in range(len(frame_ts))
-    ])
+    frame_timestamp = np.array(
+        [
+            frame_ts[i]["time_usec"]
+            for i in range(len(frame_ts))
+        ],
+        dtype=np.float32
+    )
     ### get frame timestamp increments
     frame_ts_inc = get_timestamp_increment(frame_timestamp)
     ### save video frames
     video_path = list(load_dir.glob("video.mp4"))[0]
     video_cp = cv2.VideoCapture(str(video_path))
-    for _, ts_inc in enumerate(frame_ts_inc):
+    img_save_dir = save_dir.joinpath("cam0")
+    if not img_save_dir:
+        img_save_dir.mkdir()
+
+    for i in range(frame_ts_inc.shape[0]):
         success, frame = video_cp.read()
         if not success:
             break
 
-        delta_time = timedelta(seconds=float(ts_inc))
+        delta_time = timedelta(seconds=float(frame_ts_inc[i]))
         frame_datetime = start_datetime + delta_time
         fname = datetime2timestamp(frame_datetime)
-        img_save_path = save_dir.joinpath(f"cam0/{fname}.png")
+        img_save_path = img_save_dir.joinpath(f"{fname}.png")
         cv2.imwrite(str(img_save_path), frame)
     ### load raw imu data
     vel_path = list(load_dir.glob("rotations.json"))[0]
@@ -73,7 +80,7 @@ def imu_convert_kalibr_format(
     imu_ts_inc = get_timestamp_increment(imu_timestamp)
     ### save imu data
     for i in range(imu_data.shape[0]):
-        delta_time = timedelta(seconds=float(imu_ts_inc))
+        delta_time = timedelta(seconds=float(imu_ts_inc[i]))
         imu_datetime = start_datetime + delta_time
         imu_timestamp = datetime2timestamp(imu_datetime)
         imu_data[i, 0] = float(imu_timestamp)
