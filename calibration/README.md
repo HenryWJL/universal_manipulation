@@ -24,6 +24,7 @@ Replace `<load_dir>` with your own loading directory. For instance, if raw data 
 rosrun kalibr kalibr_calibrate_cameras \
     --models pinhole-radtan \
     --topics /cam0/image_raw \
-    --bag /.../universal_manipulation/calibration/data/data.bag \
-    --target /.../universal_manipulation/calibration/yaml/apriltag_config.yaml
+    --bag ~/universal_manipulation/<load_dir>/dataset/data.bag \
+    --target ~/universal_manipulation/calibration/yaml/apriltag_config.yaml
 ```
+Replace `<load_dir>` with your own loading directory as what you did in step 2.
