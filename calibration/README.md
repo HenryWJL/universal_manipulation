@@ -7,23 +7,31 @@ Calibrate camera intrinsics and camera-imu extrinsics.
 a. Eigen 3.4
 ```
 sudo apt-get install libdw-dev
-wget -O ~/Downloads/eigen-3.4.0.tar.gz https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
-cd ~/Downloads && sudo tar -xvzf eigen-3.4.0.tar.gz
+cd ~/Downloads
+wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+tar -xvzf eigen-3.4.0.tar.gz
+rm eigen-3.4.0.tar.gz
 cd eigen-3.4.0 && mkdir build && cd build
 cmake ..
 sudo make install
 sudo cp -r /usr/local/include/eigen3 /usr/include
 ```
-b. Ceres 2.1
+
+b. OpenCV 4.5.2 with contrib module
+Follow the [instructions](https://viking-drone.com/wiki/installing-opencv-4-5-2/).
+
+c. Ceres 2.1
 ```
 sudo apt-get install liblapack-dev libblas-dev libgflags-dev libgoogle-glog-dev libsuitesparse-dev libcxsparse3 libgtest-dev
-wget -O ~/Downloads/ceres-solver-2.1.0.zip https://github.com/ceres-solver/ceres-solver/archive/2.1.0.zip
-cd ~/Downloads && unzip ceres-solver-2.1.0.zip -d ~/Downloads
+cd ~/Downloads
+wget https://github.com/ceres-solver/ceres-solver/archive/2.1.0.zip
+unzip 2.1.0.zip -d ~/Downloads
+rm 2.1.0.zip
 cd ceres-solver-2.1.0 && mkdir build && cd build
 cmake ..
 sudo make install -j4
 ```
-c. pyTheia
+d. pyTheia
 ```
 cd ~/Downloads
 git clone https://github.com/urbste/pyTheiaSfM
