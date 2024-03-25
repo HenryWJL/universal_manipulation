@@ -58,7 +58,6 @@ def imu_convert_kalibr_format(
     if not img_save_dir.is_dir():
         img_save_dir.mkdir()
 
-    print("Saving video frames...")
     for i in range(frame_ts_inc.shape[0]):
         success, frame = video_cp.read()
         if not success:
@@ -88,7 +87,6 @@ def imu_convert_kalibr_format(
 
     imu_save_path = save_dir.joinpath("imu0.csv")
     np.savetxt(str(imu_save_path), imu_data, delimiter=",", fmt="%f")
-    print(f"Done! All files saved in {str(save_dir)}")
 
 
 def imu_convert_umi_format(
