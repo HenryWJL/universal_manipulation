@@ -13,7 +13,7 @@ tar -xvzf eigen-3.4.0.tar.gz
 rm eigen-3.4.0.tar.gz
 cd eigen-3.4.0 && mkdir build && cd build
 cmake ..
-sudo make install
+sudo make install -j4
 sudo cp -r /usr/local/include/eigen3 /usr/include
 ```
 
@@ -40,7 +40,8 @@ cmake ..
 sudo make install -j4
 ```
 
-#### 1. Download and build Kalibr from source
+### Option 2: Using Kalibr
+#### (1) Download and build Kalibr from source
 Kalibr is a powerful tool used for camera and IMU calibration. Detailed information can be found at [Kalibr](https://github.com/ethz-asl/kalibr). Follow the instructions below to build Kalibr from source.
 ```
 cd ~/<workspace>/src
@@ -51,13 +52,13 @@ source devel/setup.bash
 ```
 Replace `<workspace>` with your own working space.
 
-### 2. Process raw data and then create ROS bag
+### (2) Process raw data and then create ROS bag
 ```
 python data_preprocess.py -l <load_dir>
 ```
 Replace `<load_dir>` with your own loading directory. For instance, if raw data is stored in `~/universal_manipulation/2024_03_25-09_22_52`, `<load_dir>` should be `2024_03_25-09_22_52`. 
 
-### 3. Calibrate camera intrinsics
+### (3) Calibrate camera intrinsics
 ```
 rosrun kalibr kalibr_calibrate_cameras \
     --models pinhole-radtan \
