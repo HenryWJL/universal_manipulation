@@ -18,7 +18,7 @@ sudo cp -r /usr/local/include/eigen3 /usr/include
 ```
 
 b. OpenCV 4.5.2 with contrib module
-Follow the [instructions](https://viking-drone.com/wiki/installing-opencv-4-5-2/).
+- Follow the [instructions](https://viking-drone.com/wiki/installing-opencv-4-5-2/).
 
 c. Ceres 2.1
 ```
