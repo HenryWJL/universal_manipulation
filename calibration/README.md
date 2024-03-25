@@ -16,8 +16,7 @@ sudo cp -r /usr/local/include/eigen3 /usr/include
 ```
 b. Ceres 2.1
 ```
-sudo apt-get install liblapack-dev libblas-dev libeigen3-dev libgflags-dev libgoogle-glog-dev
-sudo apt-get install liblapack-dev libsuitesparse-dev libcxsparse3 libgflags-dev libgoogle-glog-dev libgtest-dev
+sudo apt-get install liblapack-dev libblas-dev libgflags-dev libgoogle-glog-dev libsuitesparse-dev libcxsparse3  libgtest-dev
 wget -O ~/Downloads/ceres-solver-2.1.0.zip https://github.com/ceres-solver/ceres-solver/archive/2.1.0.zip
 cd ~/Downloads && unzip ceres-solver-2.1.0.zip -d ~/Downloads
 cd ceres-solver-2.1.0 && mkdir build && cd build
