@@ -55,7 +55,7 @@ def imu_convert_kalibr_format(
     video_path = list(load_dir.glob("video.mp4"))[0]
     video_cp = cv2.VideoCapture(str(video_path))
     img_save_dir = save_dir.joinpath("cam0")
-    if not img_save_dir:
+    if not img_save_dir.is_dir():
         img_save_dir.mkdir()
 
     for i in range(frame_ts_inc.shape[0]):
