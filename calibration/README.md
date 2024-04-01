@@ -22,7 +22,7 @@ If you are using **Ubuntu 22.04**, just run:
 ```bash
 sudo apt-get install libopencv-dev libopencv-contrib-dev
 ```
-Otherwise, follow the instructions [here](https://viking-drone.com/wiki/installing-opencv-4-5-2/).
+Otherwise, follow the [instructions](https://viking-drone.com/wiki/installing-opencv-4-5-2/).
 
 ##### (3) Ceres 2.1
 ```bash
@@ -79,13 +79,14 @@ sudo docker build -t openicc .
 ##### (3) Start calibration
 Follow the [example](https://github.com/urbste/OpenImuCameraCalibrator/blob/master/docs/samsung_s20_calibration.md). Notice that before the third step, you need to mount OpenICC folder and the folder that contains your calibration data to your docker container:
 ```bash
-sudo docker run -it --rm -v `pwd`:/home -v /your/path/MyS20Dataset openicc
+sudo docker run -it --rm -v `pwd`:/home -v <path_to_dataset> openicc
 ```
+Replace `<path_to_dataset>` with the path where calibration data is stored.
 
 ### Option B: Using Kalibr
 #### 1. Build Kalibr from source
 Kalibr is a powerful tool used for camera and IMU calibration. Detailed information can be found at [Kalibr](https://github.com/ethz-asl/kalibr). Follow the instructions below to build Kalibr from source.
-```
+```bash
 cd ~/<workspace>/src
 git clone https://github.com/ori-drs/kalibr.git
 cd ..
@@ -95,17 +96,25 @@ source devel/setup.bash
 Replace `<workspace>` with your own working space.
 
 #### 2. Process raw data and create ROS bag
-```
+```bash
 python data_preprocess.py -l <load_dir>
 ```
 Replace `<load_dir>` with your own loading directory. For instance, if raw data is stored in `~/universal_manipulation/2024_03_25-09_22_52`, `<load_dir>` should be `2024_03_25-09_22_52`. 
 
 #### 3. Calibrate camera intrinsics
-```
+```bash
 rosrun kalibr kalibr_calibrate_cameras \
     --models pinhole-radtan \
     --topics /cam0/image_raw \
     --bag ~/universal_manipulation/<load_dir>/dataset/data.bag \
     --target ~/universal_manipulation/calibration/yaml/apriltag_config.yaml
 ```
-Replace `<load_dir>` with your own loading directory as what you did in step 2.
+
+#### 4. Calibrate IMU and camera extrinsics
+```bash
+rosrun kalibr kalibr_calibrate_imu_camera \
+    --bag ~/universal_manipulation/<load_dir>/dataset/data.bag \
+    --cam ~/universal_manipulation/calibration/yaml/cam_intrinsics.yaml \
+    --imu ~/universal_manipulation/calibration/yaml/imu_intrinsics.yaml \
+    --target ~/universal_manipulation/calibration/yaml/apriltag_config.yaml
+```
