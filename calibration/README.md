@@ -61,6 +61,26 @@ To fix the errors, one way is to run:
 ```bash
 sudo ln -s /usr/include/opencv4/opencv2 /usr/include/
 ```
+#### 2. Create Conda environment
+If you do not use Anaconda, run the last command only.
+```bash
+conda create -n openimu python=3.9 -y
+conda activate openimu
+pip install -r requirements.txt
+```
+#### 3. Prepare Docker
+##### (1) Install Docker
+See [official documentation](https://docs.docker.com/engine/install/ubuntu/).
+
+##### (2) Build Docker container
+```bash
+sudo docker build -t openicc .
+```
+##### (3) Start calibration
+Follow the [example](https://github.com/urbste/OpenImuCameraCalibrator/blob/master/docs/samsung_s20_calibration.md). Notice that before the third step, you need to mount OpenICC folder and the folder that contains your calibration data to your docker container:
+```bash
+sudo docker run -it --rm -v `pwd`:/home -v /your/path/MyS20Dataset openicc
+```
 
 ### Option B: Using Kalibr
 #### 1. Build Kalibr from source
