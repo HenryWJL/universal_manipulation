@@ -77,11 +77,12 @@ See [official documentation](https://docs.docker.com/engine/install/ubuntu/).
 sudo docker build -t openicc .
 ```
 ##### (3) Start calibration
-Follow the [example](https://github.com/urbste/OpenImuCameraCalibrator/blob/master/docs/samsung_s20_calibration.md). Notice that before the third step, you need to mount OpenICC folder and the folder that contains your calibration data to your docker container:
+Follow the [example](https://github.com/urbste/OpenImuCameraCalibrator/blob/master/docs/samsung_s20_calibration.md) and finish the first two steps. Suppose your dataset directory is called `Dataset`, which consists of `cam`, `imu_bias`, and `cam_imu`. Now mount OpenICC folder and the folder that contains your calibration data to your docker container:
 ```bash
-sudo docker run -it --rm -v `pwd`:/home -v <path_to_dataset> openicc
+sudo docker run -it --rm -v `pwd`:/home -v <parent_absolute_path>:/data openicc
 ```
-Replace `<path_to_dataset>` with the path where calibration data is stored.
+Where `<parent_absolute_path>` is the absolute path of the parent directory of `Dataset`.
+
 
 ### Option B: Using Kalibr
 #### 1. Build Kalibr from source
