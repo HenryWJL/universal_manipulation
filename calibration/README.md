@@ -2,7 +2,7 @@
 Calibrate camera intrinsics and camera-imu extrinsics.
 
 ## Installation
-## Option A: Using OpenImuCameraCalibrator (Recommend)
+### Option A: Using OpenImuCameraCalibrator (Recommend)
 ### 1. Build dependencies
 #### (1) Eigen 3.4
 ```
@@ -35,13 +35,27 @@ cd ceres-solver-2.1.0 && mkdir build && cd build
 cmake ..
 sudo make install -j4
 ```
-#### (4) pyTheia
+#### (4) PyTheia
 ```
 cd ~/Downloads
 git clone https://github.com/urbste/pyTheiaSfM
 cd pyTheiaSfM && git checkout 69c3d37 && mkdir -p build && cd build
 cmake ..
 sudo make install -j4
+```
+#### (5) OpenImuCameraCalibrator
+```
+cd ~/Downloads
+git clone https://github.com/urbste/OpenImuCameraCalibrator
+cd OpenImuCameraCalibrator && mkdir build && cd build
+cmake ..
+make -j
+```
+When running the last command, some errors may occur:
+```shell
+fatal error: opencv2/aruco.hpp: No such file or directory
+   18 | #include <opencv2/aruco.hpp>
+      |          ^~~~~~~~~~~~~~~~~~~
 ```
 
 ## Option 2: Using Kalibr
