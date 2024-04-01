@@ -64,8 +64,8 @@ sudo ln -s /usr/include/opencv4/opencv2 /usr/include/
 #### 2. Create Conda environment
 If you do not use Anaconda, run the last command only.
 ```bash
-conda create -n openimu python=3.9 -y
-conda activate openimu
+conda create -n openicc python=3.9 -y
+conda activate openicc
 pip install -r requirements.txt
 ```
 #### 3. Prepare Docker
