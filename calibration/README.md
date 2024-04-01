@@ -77,11 +77,10 @@ See [official documentation](https://docs.docker.com/engine/install/ubuntu/).
 sudo docker build -t openicc .
 ```
 #### 4. Start calibration
-Follow the [example](https://github.com/urbste/OpenImuCameraCalibrator/blob/master/docs/samsung_s20_calibration.md) and finish the first two steps. Afterwards, mount OpenICC folder and the folder that contains your calibration data to your docker container:
+Follow the [example](https://github.com/urbste/OpenImuCameraCalibrator/blob/master/docs/samsung_s20_calibration.md) and finish the first two steps. Afterwards, mount OpenICC folder and the folder that contains your calibration data to your docker container (`<parent_absolute_path>` is the absolute path of the parent directory of `MyS20Dataset`):
 ```bash
 sudo docker run -it --rm -v `pwd`:/home -v <parent_absolute_path>:/data openicc
 ```
-Where `<parent_absolute_path>` is the absolute path of the parent directory of your dataset directory ("MyS20Dataset"). \
 Lastly, run:
 ```bash
 cd /home
