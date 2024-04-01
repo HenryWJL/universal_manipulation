@@ -84,7 +84,7 @@ sudo docker run -it --rm -v `pwd`:/home -v <parent_absolute_path>:/data openicc
 Lastly, run:
 ```bash
 cd /home
-python python/run_smartphone_calibration.py --path_calib_dataset=/data/MyS20Dataset --checker_size_m=0.02 --image_downsample_factor=1 --camera_model=PINHOLE --known_gravity_axis=Z
+python python/run_smartphone_calibration.py --path_calib_dataset=/data/MyS20Dataset --path_to_build ../OpenImuCameraCalibrator/build/applications/ --checker_size_m=0.02 --image_downsample_factor=1 --camera_model=PINHOLE --known_gravity_axis=Z
 ```
 Remember to modify "checker_size_m", which is the real length of the larger grid of your ChArUco board.
 
