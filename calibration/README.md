@@ -1,10 +1,10 @@
 # Camera & IMU Calibration
 Calibrate camera intrinsics and camera-imu extrinsics.
 
-## Usage
-### Option 1: Using OpenImuCameraCalibrator (Recommend)
-#### (1) Build dependencies
-a. Eigen 3.4
+## Installation
+### Option A: Using OpenImuCameraCalibrator (Recommend)
+#### 1. Build dependencies
+(1) Eigen 3.4
 ```
 sudo apt-get install libdw-dev
 cd ~/Downloads
@@ -17,10 +17,14 @@ sudo make install -j4
 sudo cp -r /usr/local/include/eigen3 /usr/include
 ```
 
-b. OpenCV 4.5.2 with contrib module
-- Follow the [instructions](https://viking-drone.com/wiki/installing-opencv-4-5-2/).
+(2) OpenCV 4.5.x with contrib module
+If you are using **Ubuntu 22.04**, just run:
+```
+sudo apt-get install libopencv-dev libopencv-contrib-dev
+```
+Otherwise, follow the instructions [here](https://viking-drone.com/wiki/installing-opencv-4-5-2/).
 
-c. Ceres 2.1
+(3) Ceres 2.1
 ```
 sudo apt-get install liblapack-dev libblas-dev libgflags-dev libgoogle-glog-dev libsuitesparse-dev libcxsparse3 libgtest-dev
 cd ~/Downloads
@@ -31,7 +35,7 @@ cd ceres-solver-2.1.0 && mkdir build && cd build
 cmake ..
 sudo make install -j4
 ```
-d. pyTheia
+(4) pyTheia
 ```
 cd ~/Downloads
 git clone https://github.com/urbste/pyTheiaSfM
