@@ -2,9 +2,9 @@
 Calibrate camera intrinsics and camera-imu extrinsics.
 
 ## Installation
-### Option A: Using OpenImuCameraCalibrator (Recommend)
-#### 1. Build dependencies
-(1) Eigen 3.4
+## Option A: Using OpenImuCameraCalibrator (Recommend)
+### 1. Build dependencies
+#### (1) Eigen 3.4
 ```
 sudo apt-get install libdw-dev
 cd ~/Downloads
@@ -17,14 +17,14 @@ sudo make install -j4
 sudo cp -r /usr/local/include/eigen3 /usr/include
 ```
 
-(2) OpenCV 4.5.x with contrib module \
+#### (2) OpenCV 4.5.x with contrib module
 If you are using **Ubuntu 22.04**, just run:
 ```
 sudo apt-get install libopencv-dev libopencv-contrib-dev
 ```
 Otherwise, follow the instructions [here](https://viking-drone.com/wiki/installing-opencv-4-5-2/).
 
-(3) Ceres 2.1
+#### (3) Ceres 2.1
 ```
 sudo apt-get install liblapack-dev libblas-dev libgflags-dev libgoogle-glog-dev libsuitesparse-dev libcxsparse3 libgtest-dev
 cd ~/Downloads
@@ -35,7 +35,7 @@ cd ceres-solver-2.1.0 && mkdir build && cd build
 cmake ..
 sudo make install -j4
 ```
-(4) pyTheia
+#### (4) pyTheia
 ```
 cd ~/Downloads
 git clone https://github.com/urbste/pyTheiaSfM
@@ -44,8 +44,8 @@ cmake ..
 sudo make install -j4
 ```
 
-### Option 2: Using Kalibr
-#### (1) Download and build Kalibr from source
+## Option 2: Using Kalibr
+### (1) Download and build Kalibr from source
 Kalibr is a powerful tool used for camera and IMU calibration. Detailed information can be found at [Kalibr](https://github.com/ethz-asl/kalibr). Follow the instructions below to build Kalibr from source.
 ```
 cd ~/<workspace>/src
