@@ -88,7 +88,7 @@ Replace `<path_to_dataset>` with the path where calibration data is stored.
 Kalibr is a powerful tool used for camera and IMU calibration. Detailed information can be found at [Kalibr](https://github.com/ethz-asl/kalibr). Follow the instructions below to build Kalibr from source.
 ```bash
 cd ~/<workspace>/src
-git clone https://github.com/ori-drs/kalibr.git
+git clone https://github.com/HenryWJL/kalibr.git
 cd ..
 catkin_make
 source devel/setup.bash
