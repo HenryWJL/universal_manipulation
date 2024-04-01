@@ -17,4 +17,4 @@ Follow the [calibration instructions](https://github.com/HenryWJL/universal_mani
 
 ### 2. Record data
 #### (1) Record mapping video
-Print out the ArUco marker in ``
+Print out the ArUco marker in `aruco_mapping.pdf` and place it on a rigid surface (e.g., a table). Thereafter, record a video (1 min) (and IMU data) using Pilotguru.
