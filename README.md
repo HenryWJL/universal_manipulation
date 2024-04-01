@@ -15,3 +15,6 @@ The SLAM pipeline will be run in this environment.
 ### 1. Calibration 
 Follow the [calibration instructions](https://github.com/HenryWJL/universal_manipulation/tree/main/calibration) to calibrate your mobile phone. 
 
+### 2. Record data
+#### (1) Record mapping video
+Print out the ArUco marker in ``
