@@ -76,13 +76,18 @@ See [official documentation](https://docs.docker.com/engine/install/ubuntu/).
 ```bash
 sudo docker build -t openicc .
 ```
-##### (3) Start calibration
-Follow the [example](https://github.com/urbste/OpenImuCameraCalibrator/blob/master/docs/samsung_s20_calibration.md) and finish the first two steps. Suppose your dataset directory is called `Dataset`, which consists of `cam`, `imu_bias`, and `cam_imu`. Now mount OpenICC folder and the folder that contains your calibration data to your docker container:
+#### 4. Start calibration
+Follow the [example](https://github.com/urbste/OpenImuCameraCalibrator/blob/master/docs/samsung_s20_calibration.md) and finish the first two steps. Afterwards, mount OpenICC folder and the folder that contains your calibration data to your docker container:
 ```bash
 sudo docker run -it --rm -v `pwd`:/home -v <parent_absolute_path>:/data openicc
 ```
-Where `<parent_absolute_path>` is the absolute path of the parent directory of `Dataset`.
-
+Where `<parent_absolute_path>` is the absolute path of the parent directory of your dataset directory ("MyS20Dataset"). \
+Lastly, run:
+```bash
+cd /home
+python python/run_smartphone_calibration.py --path_calib_dataset=/data/MyS20Dataset --checker_size_m=0.02 --image_downsample_factor=1 --camera_model=PINHOLE --known_gravity_axis=Z
+```
+Remember to modify "checker_size_m", which is the real length of the larger grid of your ChArUco board.
 
 ### Option B: Using Kalibr
 #### 1. Build Kalibr from source
