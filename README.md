@@ -20,7 +20,10 @@ Follow the [calibration instructions](https://github.com/HenryWJL/universal_mani
 
 ### 2. Data Collection
 #### (1) Record mapping video
-Print out the ArUco marker in `aruco_mapping.pdf` and place it in the real-world working space (e.g., if you want to manipulate objects on a table, place it on that table). Then record a video (1 min) using **Pilotguru** on your mobile phone.
+Print out the ArUco marker in `aruco_mapping.pdf` and place it in the real-world working space (e.g., if you want to manipulate objects on a table, place it on that table). Then record a video (1 min) using **Pilotguru**.
 
 #### (2) Record manipulation data
 Mount your mobile phone onto the UMI gripper and hold the gripper to manipulate objects with **Pilotguru** turned on. Make sure your motions are not too fast in order to avoid motion blur.
+
+### 3. Dataset Creation
+Now your mobile phone contains a directory that stores several videos and IMU data recorded by **Pilotguru**. 
