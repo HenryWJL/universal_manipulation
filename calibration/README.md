@@ -17,7 +17,7 @@ sudo make install -j4
 sudo cp -r /usr/local/include/eigen3 /usr/include
 ```
 
-(2) OpenCV 4.5.x with contrib module
+(2) OpenCV 4.5.x with contrib module \
 If you are using **Ubuntu 22.04**, just run:
 ```
 sudo apt-get install libopencv-dev libopencv-contrib-dev
