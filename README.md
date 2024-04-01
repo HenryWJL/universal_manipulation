@@ -5,4 +5,8 @@ This is a variant of [universal manipulation interface (UMI)](https://github.com
 ### 1. Get a mobile phone
 Download [Pilotguru](https://play.google.com/store/apps/details?id=ru.pilotguru.recorder&gl=DE) on the mobile phone. This app will be used for recording videos and IMU data.
 
-
+### 2. Create Conda environment
+```bash
+conda env create -f conda_environment.yaml
+```
+The SLAM pipeline will be run in this environment.
