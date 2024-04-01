@@ -1,4 +1,3 @@
-
 aruco_dict:
   predefined: DICT_4X4_50
 marker_size_map:
