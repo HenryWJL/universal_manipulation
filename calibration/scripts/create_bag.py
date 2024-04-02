@@ -42,7 +42,6 @@ from sensor_msgs.msg import Imu
 import sys, os
 import argparse
 import cv2
-import numpy as np
 import csv
 
 

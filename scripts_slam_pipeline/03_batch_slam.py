@@ -42,7 +42,7 @@ from utils.cv_util import draw_predefined_mask
 
 @click.command()
 @click.option('-i', '--input_dir', required=True, help='Directory for demos folder')
-@click.option('-r', '--resolution', type=tuple, default=(480, 640), help='image resolution')
+@click.option('-r', '--resolution', type=tuple, default=(2592, 1952), help='image resolution')
 @click.option('-m', '--map_path', default=None, help='ORB_SLAM3 *.osa map atlas file')
 @click.option('-d', '--docker_image', default="chicheng/orb_slam3:latest")
 @click.option('-ml', '--max_lost_frames', type=int, default=60)
