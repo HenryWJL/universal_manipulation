@@ -98,7 +98,7 @@ def loadImageToRosMsg(filename, cam_name):
     image_np = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
     
     timestamp_nsecs = os.path.splitext(os.path.basename(filename))[0]
-    timestamp = rospy.Time( secs=int(timestamp_nsecs[0:-9]), nsecs=int(timestamp_nsecs[-9:]) )
+    timestamp = rospy.Time( secs=int(timestamp_nsecs[0: 10]), nsecs=int(timestamp_nsecs[10: ]) )
 
     rosimage = Image()
     rosimage.header.stamp = timestamp
@@ -113,7 +113,7 @@ def loadImageToRosMsg(filename, cam_name):
 
 def createImuMessge(timestamp_int, omega, alpha, imu_name):
     timestamp_nsecs = timestamp_int.split(".")[0]
-    timestamp = rospy.Time(int(timestamp_nsecs[0:-9]), int(timestamp_nsecs[-9:]))
+    timestamp = rospy.Time(int(timestamp_nsecs[0: 10]), int(timestamp_nsecs[10: ]))
     
     rosimu = Imu()
     rosimu.header.stamp = timestamp
