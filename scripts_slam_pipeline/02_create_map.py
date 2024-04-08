@@ -30,6 +30,7 @@ import click
 import subprocess
 import numpy as np
 import cv2
+import av
 
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(ROOT_DIR)
@@ -39,15 +40,18 @@ from utils.cv_util import draw_predefined_mask
 
 @click.command()
 @click.option('-i', '--input_dir', required=True, help='Directory for loading mapping video')
-@click.option('-r', '--resolution', type=tuple, default=(2160, 3840), help='image resolution')
 @click.option('-m', '--map_path', default=None, help='ORB_SLAM3 *.osa map atlas file')
 @click.option('-d', '--docker_image', default="chicheng/orb_slam3:latest")
 @click.option('-np', '--no_docker_pull', is_flag=True, default=False, help="pull docker image from docker hub")
 @click.option('-nm', '--no_mask', is_flag=True, default=False, help="Whether to mask out gripper and mirrors.")
 
-def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask):
+def main(input_dir, map_path, docker_image, no_docker_pull, no_mask):
     video_dir = pathlib.Path(os.path.expanduser(input_dir)).absolute() # <session>/demos/mapping
     video_path = list(video_dir.glob("*.mp4"))[0]
+    with av.open(str(video_path)) as container:
+        stream = container.streams.video[0]
+        resolution = (stream.height, stream.width)
+
     for file in [video_path, video_dir.joinpath("imu_data.json")]:
         assert file.is_file(), "IMU data not found!"
 
@@ -90,6 +94,7 @@ def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask)
     mask_path = mount_target.joinpath('slam_mask.png')
 
     setting_mount_source = pathlib.Path(ROOT_DIR).joinpath("config/setting.yaml")
+    assert setting_mount_source.is_file(), "\"setting.yaml\" not found!"
     setting_mount_target = pathlib.Path("/setting").joinpath(setting_mount_source.name)
 
     map_mount_source = pathlib.Path(map_path)  # <session>/demos/mapping/map_atlas.osa
@@ -129,8 +134,7 @@ def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask)
         print("SLAM failed!")
         exit(1)
 
-    else:
-        print("Finish 02_create_map.")
+    print("Finish 02_create_map.")
 
 
 if __name__ == "__main__":
