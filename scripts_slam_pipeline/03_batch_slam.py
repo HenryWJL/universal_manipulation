@@ -28,6 +28,7 @@ Obtain camera trajectories
 import sys
 import os
 import cv2
+import av
 import pathlib
 import click
 import subprocess
@@ -78,6 +79,9 @@ def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_dock
     for video_dir in tqdm(input_video_dirs):
         video_dir = video_dir.absolute()
         video_path = list(video_dir.glob("*.mp4"))[0]
+        with av.open(str(video_path)) as container:
+            stream = container.streams.video[0]
+            resolution = (stream.height, stream.width)
         # if camear trajectory data already exist, skip
         if video_dir.joinpath('camera_trajectory.csv').is_file():
             print(f"\"camera_trajectory.csv\" already exists in {video_dir.name}, skip.")
@@ -97,6 +101,7 @@ def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_dock
         cv2.imwrite(str(mask_write_path.absolute()), slam_mask)
 
         setting_mount_source = pathlib.Path(ROOT_DIR).joinpath("config/setting.yaml")
+        assert setting_mount_source.is_file(), "\"setting.yaml\" not found!"
         setting_mount_target = pathlib.Path("/setting").joinpath(setting_mount_source.name)
         
         map_mount_source = map_path  # <session>/demos/mapping/map_atlas.osa
