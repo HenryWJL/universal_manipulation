@@ -61,7 +61,6 @@ def main(input_dir, camera_intrinsics, aruco_yaml, num_workers):
             continue
 
         ### detect ArUco markers on the gripper
-        # TODO modify 'detect_aruco.py' to exclude fisheye
         cmd = [
             'python', script_path,
             '--input', str(video_path),
@@ -70,9 +69,14 @@ def main(input_dir, camera_intrinsics, aruco_yaml, num_workers):
             '--aruco_yaml', aruco_yaml,
             '--num_workers', '1'
         ]
+
+        stdout_path = video_dir.joinpath('slam_stdout.txt')
+        stderr_path = video_dir.joinpath('slam_stderr.txt')
         result = subprocess.run(
             cmd,
-            cwd=str(video_dir)
+            cwd=str(video_dir),
+            stdout=stdout_path.open('w'),
+            stderr=stderr_path.open('w')
         )
         if result.returncode != 0:
             print(f"ArUco detection failed! Error in {str(video_dir)}.")
