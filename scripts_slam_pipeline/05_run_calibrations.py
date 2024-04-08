@@ -35,12 +35,11 @@ sys.path.append(ROOT_DIR)
 os.chdir(ROOT_DIR)
 
 @click.command()
-@click.argument('session_dir', nargs=-1)
+@click.option('-i', '--input_dir', required=True, help='Directory for demos folder')
 
-def main(session_dir):
+def main(input_dir):
     script_dir = pathlib.Path(ROOT_DIR).joinpath('scripts')
-    session_dir = pathlib.Path(session_dir)
-    demos_dir = session_dir.joinpath('demos')
+    demos_dir = pathlib.Path(input_dir)
     mapping_dir = demos_dir.joinpath('mapping')
     ### find relevant data
     script_path = script_dir.joinpath('calibrate_slam_tag.py')
