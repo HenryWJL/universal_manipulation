@@ -74,6 +74,7 @@ See [official documentation](https://docs.docker.com/engine/install/ubuntu/).
 
 ##### (2) Build Docker container
 ```bash
+cd OpenImuCameraCalibrator
 sudo docker build -t openicc .
 ```
 #### 4. Start calibration
