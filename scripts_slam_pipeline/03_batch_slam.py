@@ -42,7 +42,7 @@ from utils.cv_util import draw_predefined_mask
 
 @click.command()
 @click.option('-i', '--input_dir', required=True, help='Directory for demos folder')
-@click.option('-r', '--resolution', type=tuple, default=(2592, 1952), help='image resolution')
+@click.option('-r', '--resolution', type=tuple, default=(2160, 3840), help='image resolution')
 @click.option('-m', '--map_path', default=None, help='ORB_SLAM3 *.osa map atlas file')
 @click.option('-d', '--docker_image', default="chicheng/orb_slam3:latest")
 @click.option('-ml', '--max_lost_frames', type=int, default=60)
@@ -95,6 +95,9 @@ def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_dock
         slam_mask = draw_predefined_mask(
             slam_mask, color=255, mirror=True, gripper=False, finger=True)
         cv2.imwrite(str(mask_write_path.absolute()), slam_mask)
+
+        setting_mount_source = pathlib.Path(ROOT_DIR).joinpath("config/setting.yaml")
+        setting_mount_target = pathlib.Path("/setting").joinpath(setting_mount_source.name)
         
         map_mount_source = map_path  # <session>/demos/mapping/map_atlas.osa
         map_mount_target = pathlib.Path('/map').joinpath(map_mount_source.name)
@@ -106,11 +109,12 @@ def main(input_dir, resolution, map_path, docker_image, max_lost_frames, no_dock
             '--rm', # delete after finish
             '--volume', str(video_dir) + ':' + '/data',
             '--volume', str(map_mount_source.parent) + ':' + str(map_mount_target.parent),
+            '--volume', str(setting_mount_source.parent) + ':' + '/setting',
             docker_image,
             '/ORB_SLAM3/Examples/Monocular-Inertial/gopro_slam',
             '--vocabulary', '/ORB_SLAM3/Vocabulary/ORBvoc.txt',
-            '--setting', '/ORB_SLAM3/Examples/Monocular-Inertial/gopro10_maxlens_fisheye_setting_v1_720.yaml',
-            '--input_video', str(video_path),      # TODO replace the above yaml file
+            '--setting', str(setting_mount_target),
+            '--input_video', str(video_path), 
             '--input_imu_json', str(json_path),
             '--output_trajectory_csv', str(csv_path),
             '--load_map', str(map_mount_target),
