@@ -39,7 +39,7 @@ from utils.cv_util import draw_predefined_mask
 
 @click.command()
 @click.option('-i', '--input_dir', required=True, help='Directory for loading mapping video')
-@click.option('-r', '--resolution', type=tuple, default=(2592, 1952), help='image resolution')
+@click.option('-r', '--resolution', type=tuple, default=(2160, 3840), help='image resolution')
 @click.option('-m', '--map_path', default=None, help='ORB_SLAM3 *.osa map atlas file')
 @click.option('-d', '--docker_image', default="chicheng/orb_slam3:latest")
 @click.option('-np', '--no_docker_pull', is_flag=True, default=False, help="pull docker image from docker hub")
@@ -89,6 +89,9 @@ def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask)
     json_path = mount_target.joinpath('imu_data.json')
     mask_path = mount_target.joinpath('slam_mask.png')
 
+    setting_mount_source = pathlib.Path(ROOT_DIR).joinpath("config/setting.yaml")
+    setting_mount_target = pathlib.Path("/setting").joinpath(setting_mount_source.name)
+
     map_mount_source = pathlib.Path(map_path)  # <session>/demos/mapping/map_atlas.osa
     map_mount_target = pathlib.Path('/map').joinpath(map_mount_source.name)
 
@@ -99,11 +102,12 @@ def main(input_dir, resolution, map_path, docker_image, no_docker_pull, no_mask)
         '--rm', # delete after finish
         '--volume', str(video_dir) + ':' + '/data',
         '--volume', str(map_mount_source.parent) + ':' + str(map_mount_target.parent),
+        '--volume', str(setting_mount_source.parent) + ':' + '/setting',
         docker_image,
         '/ORB_SLAM3/Examples/Monocular-Inertial/gopro_slam',
         '--vocabulary', '/ORB_SLAM3/Vocabulary/ORBvoc.txt',
-        '--setting', '/ORB_SLAM3/Examples/Monocular-Inertial/gopro10_maxlens_fisheye_setting_v1_720.yaml',
-        '--input_video', str(video_path),     # TODO replace the above yaml file
+        '--setting', str(setting_mount_target),
+        '--input_video', str(video_path),     
         '--input_imu_json', str(json_path),
         '--output_trajectory_csv', str(csv_path),
         '--save_map', str(map_mount_target)
