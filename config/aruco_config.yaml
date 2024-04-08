@@ -1,9 +1,9 @@
 aruco_dict:
-  predefined: DICT_4X4_50
+  predefined: DICT_4X4_1000
 marker_size_map:
   default: 0.16
-  0: 0.016
-  1: 0.016
+  0: 0.019
+  1: 0.019
   2: 0.06
   3: 0.06
   4: 0.06
