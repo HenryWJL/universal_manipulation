@@ -4,24 +4,25 @@
 # Camera Parameters. Adjust them!
 #--------------------------------------------------------------------------------------------
 File.version: "1.0"
-Camera.type: "PINHOLE"
+Camera.type: "KannalaBrandt8"
 # Camera calibration and distortion parameters 
-Camera1.fx: 983.3613451087324
-Camera1.fy: 983.3613451087324
-Camera1.cx: 638.2982402519622
-Camera1.cy: 362.4562693917553
+Camera1.fx: 939.6315647750445
+Camera1.fy: 939.6315647750445
+Camera1.cx: 632.6354428495104
+Camera1.cy: 358.0252990694845
 
-Camera1.k1: 0.0
-Camera1.k2: 0.0
-Camera1.k3: 0.0
-Camera1.k4: 0.0
+Camera1.k1: 0.0065840882805085635
+Camera1.k2: 1.8105800356522258e-10
+Camera1.k3: -1.0637308489937445e-16
+Camera1.k4: -0.001169318579915325
+Camera1.k5: -0.0026622294149314138
 
 # Camera resolution
 Camera.width: 1280
 Camera.height: 720
 
 # Camera frames per second 
-Camera.fps: 29.42137953579601
+Camera.fps: 30
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
