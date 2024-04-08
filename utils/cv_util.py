@@ -39,23 +39,18 @@ def parse_pinhole_intrinsics(json_data: dict) -> Dict[str, np.ndarray]:
         "fps": 60.0,
         "image_height": 1080,
         "image_width": 1920,
-        "intrinsic_type": "FISHEYE",
+        "intrinsic_type": "PINHOLE",
         "intrinsics": {
             "aspect_ratio": 1.0026582765352035,
             "focal_length": 420.56809123853304,
             "principal_pt_x": 959.857586309181,
             "principal_pt_y": 542.8155851051391,
-            "radial_distortion_1": -0.011968137016185161,
-            "radial_distortion_2": -0.03929790706019372,
-            "radial_distortion_3": 0.018577224235396064,
-            "radial_distortion_4": -0.005075629959840777,
             "skew": 0.0
         },
         "nr_calib_images": 129,
         "stabelized": false
     }
     """
-    assert json_data['intrinsic_type'] == 'FISHEYE'  # TODO
     intr_data = json_data['intrinsics']
     
     # img size
@@ -66,14 +61,21 @@ def parse_pinhole_intrinsics(json_data: dict) -> Dict[str, np.ndarray]:
     f = intr_data['focal_length']
     px = intr_data['principal_pt_x']
     py = intr_data['principal_pt_y']
-    
-    # Kannala-Brandt non-linear parameters for distortion  # TODO
-    kb8 = [
-        intr_data['radial_distortion_1'],
-        intr_data['radial_distortion_2'],
-        intr_data['radial_distortion_3'],
-        intr_data['radial_distortion_4']
-    ]
+
+    if json_data['intrinsic_type'] == 'PINHOLE':
+        dist = np.zeros((5, 1))
+
+    elif json_data['intrinsic_type'] == 'PINHOLE_RADIAL_TANGENTIAL':
+        dist = np.array([[
+            intr_data["radial_distortion_1"],
+            intr_data["radial_distortion_2"],
+            intr_data["radial_distortion_3"],
+            intr_data["tangential_distortion_1"],
+            intr_data["tangential_distortion_2"]
+        ]]).T
+
+    else:
+        raise NotImplementedError(f"Camera type {json_data['intrinsic_type']} not implemented!")
 
     opencv_intr_dict = {
         'DIM': np.array([w, h], dtype=np.int64),
@@ -82,7 +84,7 @@ def parse_pinhole_intrinsics(json_data: dict) -> Dict[str, np.ndarray]:
             [0, f, py],
             [0, 0, 1]
         ], dtype=np.float64),
-        'D': np.array([kb8]).T
+        'D': dist
     }
     return opencv_intr_dict
 
@@ -205,6 +207,7 @@ def detect_localize_aruco_tags(
     )
     # no corner detected
     if len(corners) == 0:
+        print("No corners found!")
         return dict()
 
     tag_dict = dict()
