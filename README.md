@@ -37,6 +37,6 @@ Mount your mobile phone onto the UMI gripper and hold the gripper to manipulate 
 
 ### 3. Dataset Generation
 Now your mobile phone should contain a directory dubbed `PilotGuru` that stores several videos and IMU data recorded by **PilotGuru**. Move it under `universal_manipulation` directory and run:
-```python
+```bash
 python run_slam_pipeline.py -l PilotGuru
 ```
